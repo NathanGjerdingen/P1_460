@@ -1,3 +1,4 @@
+package Example1;
 //
 //	CREDIT TO: https://gangof1994.wordpress.com/2015/08/11/stop-and-wait-protocol-using-socket-program/
 //	
@@ -43,6 +44,8 @@ class stopwaitreceiver {
 		}
 
 		System.out.println("ALL FRAMES  WERE RECEIVED SUCCESSFULLY");
+		
+		// Closes to suppress warnings...
 		myss.close();
 	}
 }
