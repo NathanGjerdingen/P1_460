@@ -22,7 +22,7 @@ class stopwaitsender {
 		Scanner sc = new Scanner(System.in);
 		System.out.println("Enter no of frames to be sent:");
 		int n = sc.nextInt();
-		Socket myskt = new Socket("localhost",8888);
+		Socket myskt = new Socket("localhost",7777);
 		PrintStream myps = new PrintStream(myskt.getOutputStream());
 
 		for (int i = 0 ; i <= n;) {

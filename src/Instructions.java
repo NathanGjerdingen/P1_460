@@ -30,14 +30,13 @@ public class Instructions {
 
 	public void howToStartExample1() {
 		
-//		To start Example 1, you need to run the stopwaitreciever.java first. This 
-//		sets up the sever for the stopwaitsender to send files to. You can do this 
-//		in Eclipse or  cmd-line if you wish. 
-//		
+//		To start Example 1, you need to run the stopwaitreciever first. This 
+//		sets up the sever for the stopwaitsender to send files to. I can only
+//		run this successfully in Eclipse.
+//
 //		Once starting the stopwaitreciever, you can run the stopwaitsender and send
 //		packets of info the the reciever. I'll ask you a number after it is started 
 //		and will notify you when things are being sent/recieved.
-//		
 //		
 //		NOTES:
 //		After starting a stopwaitreciever on a port (currently localhost:8888), when 
