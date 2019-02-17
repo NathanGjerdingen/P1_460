@@ -1,3 +1,7 @@
+import com.sun.corba.se.pept.transport.Connection;
+
+import javafx.scene.shape.Line;
+import jdk.nashorn.internal.runtime.regexp.joni.constants.Arguments;
 
 public class Instructions {
 	
@@ -24,4 +28,40 @@ public class Instructions {
 //		
 //		Cheers!
 
+	public void howToStartExample1() {
+		
+//		To start Example 1, you need to run the stopwaitreciever.java first. This 
+//		sets up the sever for the stopwaitsender to send files to. You can do this 
+//		in Eclipse or  cmd-line if you wish. 
+//		
+//		Once starting the stopwaitreciever, you can run the stopwaitsender and send
+//		packets of info the the reciever. I'll ask you a number after it is started 
+//		and will notify you when things are being sent/recieved.
+//		
+//		
+//		NOTES:
+//		After starting a stopwaitreciever on a port (currently localhost:8888), when 
+//		finished, you must either kill that port task or choose a new port next time
+//		you run the reciever. If you choose a new port, be sure to update the sender
+//		with that port as well.
+		
+	}
+	
+	public void howToStartExample2() {
+		
+//		Example 2 is more of what we're looking for in terms of functionality. 
+//		Similarly to the stopwaitreceiver in Example 1, you need to start the 
+//		Server first in Example 2. 
+//		
+//		Unlike Example 1's stopwaitreciever, you need to pass the port number 
+//		to the program when starting it. This can be done by adding a port 
+//		number under Eclipse>Run>Run Configurations>Arguments.
+//		
+//		After running the Server, then you can go to Client and send a file
+//		over that connection. I included a few test files to do just that. 
+//		The command I'm using to do so is the following...
+//		
+//		java Client <PACKET_RATE_HERE> localhost <PORT_NUM_HERE> test.bin serverText.bin
+		
+	}
 }

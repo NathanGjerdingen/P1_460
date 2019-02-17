@@ -22,7 +22,7 @@ class stopwaitreceiver {
 		String temp = "any message";
 		String str="exit";
 		
-		ServerSocket myss=new ServerSocket(9999);
+		ServerSocket myss=new ServerSocket(8888);
 		Socket ss_accept=myss.accept();
 
 		BufferedReader ss_bf=new BufferedReader(new InputStreamReader(ss_accept.getInputStream()));
