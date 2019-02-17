@@ -1,6 +1,6 @@
 package Example2;
 
-// 	CREDIT TO: https://github.com/Michaelcj10/Java-UDP-File-Transfer-Made-Reliable/tree/master/src
+//CREDIT TO: https://github.com/Michaelcj10/Java-UDP-File-Transfer-Made-Reliable/tree/master/src
 
 
 import java.io.*;
