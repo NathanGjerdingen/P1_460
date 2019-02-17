@@ -39,7 +39,7 @@ public class Instructions {
 //		and will notify you when things are being sent/recieved.
 //		
 //		NOTES:
-//		After starting a stopwaitreciever on a port (currently localhost:8888), when 
+//		After starting a stopwaitreciever on a port (currently localhost:7777), when 
 //		finished, you must either kill that port task or choose a new port next time
 //		you run the reciever. If you choose a new port, be sure to update the sender
 //		with that port as well.
@@ -54,13 +54,18 @@ public class Instructions {
 //		
 //		Unlike Example 1's stopwaitreciever, you need to pass the port number 
 //		to the program when starting it. This can be done by adding a port 
-//		number under Eclipse>Run>Run Configurations>Arguments.
+//		number under Eclipse>Run>Run Configurations>Arguments. Also, this
+//		Example can be run from the command line. 
 //		
 //		After running the Server, then you can go to Client and send a file
 //		over that connection. I included a few test files to do just that. 
 //		The command I'm using to do so is the following...
 //		
 //		java Client <PACKET_RATE_HERE> localhost <PORT_NUM_HERE> test.bin serverText.bin
+//		
+//		NOTES:
+//		From the cmd above, all these can be parameters given to the program in 
+//		Eclipse>Run>Run Configurations>Arguments if needed to be ran from Eclipse
 		
 	}
 }
