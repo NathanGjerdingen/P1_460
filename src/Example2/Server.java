@@ -1,163 +1,213 @@
 package Example2;
 
-import java.io.*;
-import java.net.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 
-//	CREDIT TO: https://github.com/Michaelcj10/Java-UDP-File-Transfer-Made-Reliable/tree/master/src
-
-
+/**
+ * Server class
+ * 
+ * 
+ * @author Nate, Jose, Tyler
+ *
+ *         Source:
+ *         https://github.com/Michaelcj10/Java-UDP-File-Transfer-Made-Reliable/tree/master/src
+ */
 class Server {
 
-    private static int totalTransferred = 0;
-    private static StartTime timer;
-    private static String fileName = "";
-    private static String decodedDataUsingUTF82 = null;
+	private static int totalTransferred = 0;
+	private static StartTime timer;
+	private static String fileName = "";
+	private static String decodedDataUsingUTF82 = null;
 
-    public static void main(String args[]) throws Exception {
+	/**
+	 * Main method. Will call the appropriate method to set up the port.
+	 * 
+	 * @param args
+	 * @throws Exception
+	 */
+	public static void main(String args[]) throws Exception {
 
-        System.out.println("Ready!");
-        final int port = Integer.parseInt(args[0]);
-        setUp(port);
-    }
+		System.out.println("Ready!");
+		final int port = Integer.parseInt(args[0]);
+		setUp(port);
+	}
 
-    public static void setUp(int port) throws IOException {
+	/**
+	 * setUp method accepts an integer to setUp the port. Will decode any symbols or
+	 * characters.
+	 * 
+	 * @param port
+	 * @throws IOException
+	 */
+	public static void setUp(int port) throws IOException {
 
-        DatagramSocket socket = new DatagramSocket(port);
+		DatagramSocket socket = new DatagramSocket(port);
 
-        byte[] receiveFileNameChoice = new byte[1024];
-        DatagramPacket receiveFileNameChoicePacket = new DatagramPacket(
-                receiveFileNameChoice, receiveFileNameChoice.length);
-        socket.receive(receiveFileNameChoicePacket);
+		byte[] receiveFileNameChoice = new byte[1024];
+		DatagramPacket receiveFileNameChoicePacket = new DatagramPacket(receiveFileNameChoice,
+				receiveFileNameChoice.length);
+		socket.receive(receiveFileNameChoicePacket);
 
-        try {
-            decodedDataUsingUTF82 = new String(receiveFileNameChoice, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+		try {
+			decodedDataUsingUTF82 = new String(receiveFileNameChoice, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 
-        String savedFileName = decodedDataUsingUTF82.trim();
-        fileName = savedFileName;
-        setFileName(savedFileName);
-        File file = new File(fileName);
-        FileOutputStream outToFile = new FileOutputStream(file);
+		String savedFileName = decodedDataUsingUTF82.trim();
+		fileName = savedFileName;
+		setFileName(savedFileName);
+		File file = new File(fileName);
+		FileOutputStream outToFile = new FileOutputStream(file);
 
-        acceptTransferOfFile(outToFile, socket);
+		acceptTransferOfFile(outToFile, socket);
 
-        byte[] finalStatData = new byte[1024];
-        DatagramPacket receivePacket = new DatagramPacket(finalStatData,
-                finalStatData.length);
-        socket.receive(receivePacket);
-        printFinalStatistics(finalStatData);
-    }
+		byte[] finalStatData = new byte[1024];
+		DatagramPacket receivePacket = new DatagramPacket(finalStatData, finalStatData.length);
+		socket.receive(receivePacket);
+		printFinalStatistics(finalStatData);
+	}
 
-    private static void printFinalStatistics(byte[] finalStatData) {
-        try {
-            String decodedDataUsingUTF8 = new String(finalStatData, "UTF-8");
-            PrintFactory.printSpace();
-            PrintFactory.printSpace();
-            System.out.println("Statistics of transfer");
-            PrintFactory.printSeperator();
-            System.out.println("File has been saved as: " + getFileName());
-            System.out.println("Statistics of transfer");
-            System.out.println("" + decodedDataUsingUTF8.trim());
-            PrintFactory.printSeperator();
+	/**
+	 * Method used to print the statistics from the file transfers.
+	 * 
+	 * @param finalStatData
+	 */
+	private static void printFinalStatistics(byte[] finalStatData) {
+		try {
+			String decodedDataUsingUTF8 = new String(finalStatData, "UTF-8");
+			PrintFactory.printSpace();
+			PrintFactory.printSpace();
+			System.out.println("Statistics of transfer");
+			PrintFactory.printSeperator();
+			System.out.println("File has been saved as: " + getFileName());
+			System.out.println("Statistics of transfer");
+			System.out.println("" + decodedDataUsingUTF8.trim());
+			PrintFactory.printSeperator();
 
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-    }
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+	}
 
-    private static void acceptTransferOfFile(FileOutputStream outToFile, DatagramSocket socket) throws IOException {
+	/**
+	 * Method used to break down the binary file into smaller chunks.
+	 * 
+	 * @param outToFile
+	 * @param socket
+	 * @throws IOException
+	 */
+	private static void acceptTransferOfFile(FileOutputStream outToFile, DatagramSocket socket) throws IOException {
 
-        // last message flag
-        boolean flag;
-        int sequenceNumber = 0;
-        int findLast = 0;
+		// last message flag
+		boolean flag;
+		int sequenceNumber = 0;
+		int findLast = 0;
 
-        while (true) {
-            byte[] message = new byte[1024];
-            byte[] fileByteArray = new byte[1021];
+		while (true) {
+			byte[] message = new byte[1024];
+			byte[] fileByteArray = new byte[1021];
 
-            // Receive packet and retrieve message
-            DatagramPacket receivedPacket = new DatagramPacket(message, message.length);
-            socket.setSoTimeout(0);
-            socket.receive(receivedPacket);
+			// Receive packet and retrieve message
+			DatagramPacket receivedPacket = new DatagramPacket(message, message.length);
+			socket.setSoTimeout(0);
+			socket.receive(receivedPacket);
 
-            message = receivedPacket.getData();
-            totalTransferred = receivedPacket.getLength() + totalTransferred;
-            totalTransferred = Math.round(totalTransferred);
+			message = receivedPacket.getData();
+			totalTransferred = receivedPacket.getLength() + totalTransferred;
+			totalTransferred = Math.round(totalTransferred);
 
-            // start the timer at the point transfer begins
-            if (sequenceNumber == 0) {
-                timer = new StartTime();
-            }
+			// start the timer at the point transfer begins
+			if (sequenceNumber == 0) {
+				timer = new StartTime();
+			}
 
-            if (Math.round(totalTransferred / 1000) % 50 == 0) {
-                double previousTimeElapsed = 0;
-                int previousSize = 0;
-                PrintFactory.printCurrentStatistics(totalTransferred, previousSize,
-                        timer, previousTimeElapsed);
-            }
-            // Get port and address for sending acknowledgment
-            InetAddress address = receivedPacket.getAddress();
-            int port = receivedPacket.getPort();
+			if (Math.round(totalTransferred / 1000) % 50 == 0) {
+				double previousTimeElapsed = 0;
+				int previousSize = 0;
+				PrintFactory.printCurrentStatistics(totalTransferred, previousSize, timer, previousTimeElapsed);
+			}
+			// Get port and address for sending acknowledgment
+			InetAddress address = receivedPacket.getAddress();
+			int port = receivedPacket.getPort();
 
-            // Retrieve sequence number
-            sequenceNumber = ((message[0] & 0xff) << 8) + (message[1] & 0xff);
-            // Retrieve the last message flag
-            // a returned value of true means we have a problem
-            flag = (message[2] & 0xff) == 1;
-            // if sequence number is the last one +1, then it is correct
-            // we get the data from the message and write the message
-            // that it has been received correctly
-            if (sequenceNumber == (findLast + 1)) {
+			// Retrieve sequence number
+			sequenceNumber = ((message[0] & 0xff) << 8) + (message[1] & 0xff);
+			// Retrieve the last message flag
+			// a returned value of true means we have a problem
+			flag = (message[2] & 0xff) == 1;
+			// if sequence number is the last one +1, then it is correct
+			// we get the data from the message and write the message
+			// that it has been received correctly
+			if (sequenceNumber == (findLast + 1)) {
 
-                // set the last sequence number to be the one we just received
-                findLast = sequenceNumber;
+				// set the last sequence number to be the one we just received
+				findLast = sequenceNumber;
 
-                // Retrieve data from message
-                System.arraycopy(message, 3, fileByteArray, 0, 1021);
+				// Retrieve data from message
+				System.arraycopy(message, 3, fileByteArray, 0, 1021);
 
-                // Write the message to the file and print received message
-                outToFile.write(fileByteArray);
-                System.out.println("Received: Sequence number:"
-                        + findLast);
+				// Write the message to the file and print received message
+				outToFile.write(fileByteArray);
+				System.out.println("Received: Sequence number:" + findLast);
 
-                // Send acknowledgement
-                sendAck(findLast, socket, address, port);
-            } else {
-                System.out.println("Expected sequence number: "
-                        + (findLast + 1) + " but received "
-                        + sequenceNumber + ". DISCARDING");
-                // Re send the acknowledgement
-                sendAck(findLast, socket, address, port);
-            }
+				// Send acknowledgement
+				sendAck(findLast, socket, address, port);
+			} else {
+				System.out.println("Expected sequence number: " + (findLast + 1) + " but received " + sequenceNumber
+						+ ". DISCARDING");
+				// Re send the acknowledgement
+				sendAck(findLast, socket, address, port);
+			}
 
-            // Check for last message
-            if (flag) {
-                outToFile.close();
-                break;
-            }
-        }
-    }
+			// Check for last message
+			if (flag) {
+				outToFile.close();
+				break;
+			}
+		}
+	}
 
-    private static String getFileName() {
-        return fileName;
-    }
+	/**
+	 * Methods returns file name
+	 * 
+	 * @return
+	 */
+	private static String getFileName() {
+		return fileName;
+	}
 
-    private static void setFileName(String passed_file_name) {
-        fileName = passed_file_name;
-    }
+	/**
+	 * Method sets file name
+	 * 
+	 * @param passed_file_name
+	 */
+	private static void setFileName(String passed_file_name) {
+		fileName = passed_file_name;
+	}
 
-    private static void sendAck(int findLast, DatagramSocket socket, InetAddress address, int port) throws IOException {
-        // send acknowledgement
-        byte[] ackPacket = new byte[2];
-        ackPacket[0] = (byte) (findLast >> 8);
-        ackPacket[1] = (byte) (findLast);
-        // the datagram packet to be sent
-        DatagramPacket acknowledgement = new DatagramPacket(ackPacket,
-                ackPacket.length, address, port);
-        socket.send(acknowledgement);
-        System.out.println("Sent ack: Sequence Number = " + findLast);
-    }
+	/**
+	 * Methods sends an acknowledgement byte and prints the sequence number
+	 * 
+	 * @param findLast
+	 * @param socket
+	 * @param address
+	 * @param port
+	 * @throws IOException
+	 */
+	private static void sendAck(int findLast, DatagramSocket socket, InetAddress address, int port) throws IOException {
+		// send acknowledgement
+		byte[] ackPacket = new byte[2];
+		ackPacket[0] = (byte) (findLast >> 8);
+		ackPacket[1] = (byte) (findLast);
+		// the datagram packet to be sent
+		DatagramPacket acknowledgement = new DatagramPacket(ackPacket, ackPacket.length, address, port);
+		socket.send(acknowledgement);
+		System.out.println("Sent ack: Sequence Number = " + findLast);
+	}
 }
