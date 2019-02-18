@@ -32,8 +32,8 @@ class Server {
 	 */
 	public static void main(String args[]) throws Exception {
 
-		System.out.println("Ready!");
 		final int port = Integer.parseInt(args[0]);
+		System.out.println("Ready!");
 		setUp(port);
 	}
 
