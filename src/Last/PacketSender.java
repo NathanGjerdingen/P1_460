@@ -22,32 +22,32 @@ class PacketSender {
 	    
 	    File file = new File("alice29.txt");
 	    
-	    
 	    byte[] fileContent = Files.readAllBytes(file.toPath());
 	    
 	    byte[] accumulator = new byte[10000];
 	    byte dataGramAccumulator = 1;
-	    int j = 0;
+	    int j = 1;
 	    int k = 0;
 	    
-    	accumulator[0] = dataGramAccumulator;
+//	    System.out.println(fileContent.length);
+	    
 	    
 	    for (int i = 1; i < fileContent.length; i++) {
-	    	accumulator[i] = fileContent[k];
+	    	accumulator[0] = dataGramAccumulator;
+	    	accumulator[j] = fileContent[i];
 	    	j++;
 	    	k++;
 	    	
-	    	System.out.println("Loop #" + j);
+//	    	System.out.println("Loop #" + j);
 	    		    	
 	    	if (j%9999 == 0) {
-	    		DatagramPacket packet = new DatagramPacket(accumulator, accumulator.length, new InetSocketAddress("localhost", 4446));
+//	    		DatagramPacket packet = new DatagramPacket(accumulator, accumulator.length, new InetSocketAddress("localhost", 4446));
 //	    		socket.send(packet);
-	    		dataGramAccumulator++;
 	    		
 	    		System.out.println("Sequence number: " + accumulator[0] +", Offset start: " + accumulator[1] + ", Offset end: " + accumulator[9998]);
-	    		i=1;
-	    		j=0;
+	    		dataGramAccumulator++;
+	    		j=1;
 	    	}
-		}
+	    }
 	  }
 	}
