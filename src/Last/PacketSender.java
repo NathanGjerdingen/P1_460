@@ -14,13 +14,10 @@ class PacketSender {
 
 	  public static void main(String[] args) throws Exception {
 		  
-  		DatagramSocket socket = new DatagramSocket(4447);
+  		DatagramSocket socket = new DatagramSocket(8080);
 
 		  
-		// Instead of just a string, we want to get a file
-	    byte[] buffer = "data".getBytes();
-	    
-	    File file = new File("alice29.txt");
+		File file = new File("alice29.txt");
 	    
 	    byte[] fileContent = Files.readAllBytes(file.toPath());
 	    
@@ -41,13 +38,20 @@ class PacketSender {
 //	    	System.out.println("Loop #" + j);
 	    		    	
 	    	if (j%9999 == 0) {
-//	    		DatagramPacket packet = new DatagramPacket(accumulator, accumulator.length, new InetSocketAddress("localhost", 4446));
-//	    		socket.send(packet);
+	    		DatagramPacket packet = new DatagramPacket(accumulator, accumulator.length, new InetSocketAddress("localhost", 8024));
+	    		socket.send(packet);
 	    		
 	    		System.out.println("Sequence number: " + accumulator[0] +", Offset start: " + accumulator[1] + ", Offset end: " + accumulator[9998]);
 	    		dataGramAccumulator++;
 	    		j=1;
 	    	}
 	    }
+	    int temp = fileContent.length-(dataGramAccumulator-1)*10000;
+	    DatagramPacket packet = new DatagramPacket(accumulator, temp, new InetSocketAddress("localhost", 8024));
+		socket.send(packet);
+		
+		System.out.println("Sequence number: " + accumulator[0] +", Offset start: " + accumulator[1] + ", Offset end: " + accumulator[temp-1]);
+	    
+	    socket.close();
 	  }
 	}
