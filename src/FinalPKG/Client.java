@@ -2,7 +2,10 @@ package FinalPKG;
 
 import java.io.*;
 import java.net.*;
+import java.util.Arrays;
 import java.util.Random;
+
+import Example5.PackageThread;
 
 /**
  * Client method
@@ -19,6 +22,10 @@ public class Client {
 	private static String destFileName;
 	private static String hostName;
 	private static int port;
+    private InetAddress ip;
+    private DatagramPacket packet;
+    private DatagramSocket socket;
+
 
 	/**
 	 * Main method
@@ -151,4 +158,48 @@ public class Client {
 	private static void setHostname(String passed_host_name) {
 		hostName = passed_host_name;
 	}
+	
+    private void sendPackets(byte[] bytes, int i){
+
+        if(bytes.length - ( i  * 1000 ) > 1000) {
+            byte[] arr = Arrays.copyOfRange(bytes, i * 1000, (i + 1) * 1000);
+            packet = new DatagramPacket(arr, 1000, ip, port);
+            try {
+                socket.send(packet);
+            } catch (Exception e) {
+                System.out.println("Something went wrong");
+            }
+            PackageThread pt = new PackageThread(socket, this) {
+                @Override
+                public void doWork() throws Exception {
+                    if (new String(receivedBuffer).trim().equals("I received")) {
+                        sendPackets(bytes, i + 1);
+                    }else{
+                        System.out.println("error occurred");
+                    }
+                }
+            };
+            pt.startListening();
+        } else {
+
+            byte[] arr = Arrays.copyOfRange(bytes, bytes.length - ( bytes.length % 1000), bytes.length);
+            packet = new DatagramPacket(arr, bytes.length % 1000, ip, port);
+            try {
+                socket.send(packet);
+            } catch (Exception e) {
+                System.out.println("Something went wrong");
+            }
+            PackageThread pt = new PackageThread(socket, this) {
+                @Override
+                public void doWork() throws Exception {
+                    if (new String(receivedBuffer).trim().equals("I received")) {
+                        label.setText("File has been sent successfully");
+                    }else{
+                        System.out.println("error occurred");
+                    }
+                }
+            };
+            pt.startListening();
+        }
+    }
 }

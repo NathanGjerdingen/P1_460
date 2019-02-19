@@ -1,11 +1,7 @@
 package Example2;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketTimeoutException;
+import java.io.*;
+import java.net.*;
 import java.util.Random;
 
 /**
