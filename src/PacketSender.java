@@ -16,17 +16,17 @@ class PacketSender {
 	  public static void main(String[] args) throws Exception {
 		  
 		//	Initialize socket for sending and file to send...
-  		DatagramSocket socket = new DatagramSocket(8080);
+  		DatagramSocket dataSender = new DatagramSocket(8080);
   		
   		//	Initialize file to send...
 		File file = new File("../alice29.txt");
-	    byte[] fileContent = Files.readAllBytes(file.toPath());
+	    byte[] fileData = Files.readAllBytes(file.toPath());
 
 		//	Initialize content buffers...
-	    byte[] accumulator = new byte[10000];
+	    byte[] data = new byte[10000];
 	    
 	    //	accumulator1 is just the last unsized part of the sender...
-	    byte[] accumulator1 = new byte[7284];
+	    byte[] leftoverData = new byte[7284];
 	    
 	    // used to keep track of total datagrams sent 
 	    byte dataGramAccumulator = 1;
@@ -39,16 +39,21 @@ class PacketSender {
 	    System.out.println("packets sent:");
 	    
 	    // for loop used to write data from the input file into individual datagrams
-	    for (int i = 1; i < fileContent.length; i++,j++) {
+	    for (int i = 1; i < fileData.length; i++,j++) {
 	    	
 	    	//	Give accumulator what's currently in dataGramAccumulator @ pos i...
-	    	accumulator[0] = dataGramAccumulator;
-	    	accumulator[j] = fileContent[i];
+	    	data[0] = dataGramAccumulator;
+	    	data[j] = fileData[i];
 	    	    	
 	    	if (j%9999 == 0) {
-	    		DatagramPacket packet = new DatagramPacket(accumulator, accumulator.length, new InetSocketAddress("localhost", 8024));
-	    		socket.send(packet);
-	    		System.out.println("Sequence number: " + accumulator[0] +", Offset start: " + (0+9999*k) + ", Offset end: " + (9998+9999*k));
+	    		DatagramPacket packet = new DatagramPacket(data, data.length, new InetSocketAddress("localhost", 8024));
+	    		dataSender.send(packet);
+	    		
+	    		System.out.println( "[SENDing]: Sequence number: " + data[0] + ", " +
+	    							"Offset start: " + (0+9999*k) + ", " +
+	    							"Offset end: " + (9998+9999*k)
+	    		);
+	    		
 	    		k++;
 	    		dataGramAccumulator++;
 	    		j=1;
@@ -56,17 +61,17 @@ class PacketSender {
 	    }
 	    
 	    // temp is the size of what is remaining in the input file after full size datagrams are sent
-	    int temp = fileContent.length-(dataGramAccumulator-1)*9999;
+	    int temp = fileData.length-(dataGramAccumulator-1)*9999;
 	    
 	    // send the last datagram that is not of full size
-	    System.arraycopy(accumulator, 0, accumulator1, 0, 7284);
-	    DatagramPacket packet = new DatagramPacket(accumulator1, temp, new InetSocketAddress("localhost", 8024));
-		socket.send(packet);
+	    System.arraycopy(data, 0, leftoverData, 0, 7284);
+	    DatagramPacket leftoverContainter = new DatagramPacket(leftoverData, temp, new InetSocketAddress("localhost", 8024));
+		dataSender.send(leftoverContainter);
 		
 		// Output for user...
-		System.out.println("Sequence number: " + accumulator1[0] +", Offset start: " + (fileContent.length-temp) + ", Offset end: " + (fileContent.length-1));
+		System.out.println("Sequence number: " + leftoverData[0] +", Offset start: " + (fileData.length-temp) + ", Offset end: " + (fileData.length-1));
 		
 	    //	Close streams so no data leaks...
-	    socket.close();
+	    dataSender.close();
 	  }
 	}

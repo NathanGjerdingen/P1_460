@@ -11,93 +11,143 @@ import java.net.UnknownHostException;
 
 
 class PacketReceiver {
+	
+//	HOW TO RUN PROGRAM EXAMPLE:
+//	java PacketReceiver -d 0.5 20.20.20.20 8024
+	
+	
+//	THINGS NEEDED TO BE DONE:
+//	1. Implement drop/currupt/ rate in recieving
+//	2. Implement acknowledgment to Sender
+	
+//	LET'S 'A GO~
+//	
+//	─────────────────────███████──███████
+//	─────────────────████▓▓▓▓▓▓████░░░░░██
+//	───────────────██▓▓▓▓▓▓▓▓▓▓▓▓██░░░░░░██
+//	─────────────██▓▓▓▓▓▓████████████░░░░██
+//	───────────██▓▓▓▓▓▓████████████████░██
+//	───────────██▓▓████░░░░░░░░░░░░██████
+//	─────────████████░░░░░░██░░██░░██▓▓▓▓██
+//	─────────██░░████░░░░░░██░░██░░██▓▓▓▓██
+//	───────██░░░░██████░░░░░░░░░░░░░░██▓▓██
+//	───────██░░░░░░██░░░░██░░░░░░░░░░██▓▓██
+//	─────────██░░░░░░░░░███████░░░░██████
+//	───────────████░░░░░░░███████████▓▓██
+//	─────────────██████░░░░░░░░░░██▓▓▓▓██
+//	───────────██▓▓▓▓██████████████▓▓██
+//	─────────██▓▓▓▓▓▓▓▓████░░░░░░████
+//	───────████▓▓▓▓▓▓▓▓██░░░░░░░░░░██
+//	───────████▓▓▓▓▓▓▓▓██░░░░░░░░░░██
+//	───────██████▓▓▓▓▓▓▓▓██░░░░░░████████
+//	─────────██████▓▓▓▓▓▓████████████████
+//	───────────██████████████████████▓▓▓▓██
+//	─────────██▓▓▓▓████████████████▓▓▓▓▓▓██
+//	───────████▓▓██████████████████▓▓▓▓▓▓██
+//	───────██▓▓▓▓██████████████████▓▓▓▓▓▓██
+//	───────██▓▓▓▓██████████──────██▓▓▓▓████
+//	───────██▓▓▓▓████──────────────██████ 
+//	─────────████
 
 	//	Initialize static variables with default vals...
-	static double datagramsToCurrupt = 0;
+	static int datagramsToCurrupt = 0;
 	static InetAddress receiver_ip_addr;
 	static int receiver_port = 8024;
 
-	private static void getArgs(String[] args) throws UnknownHostException {
-		datagramsToCurrupt = Double.parseDouble(args[0]);
-		receiver_ip_addr = InetAddress.getByName(args[1]);
-		receiver_port = Integer.parseInt(args[2]);
+	private static void setArgs(String[] args) throws UnknownHostException {
+		
+		//	Test if we want to set...
+		if (args.length > 3 && args[0].endsWith("d")) {
+			
+			//	Set static variable from args...
+			datagramsToCurrupt = (int) (Double.parseDouble(args[1]) * 100);
+			receiver_ip_addr = InetAddress.getByName(args[2]);
+			receiver_port = Integer.parseInt(args[3]);
+			
+		}
+		
 	}
-
 
 	public static void main(String[] args) throws Exception {
 
-		getArgs(args);
+		//	Set args...
+		setArgs(args);
 
 		// Initialize Buffer sizes
-		//	WHERE DO WE GET THESE SIZES?!?! Make then calculate-able. 
-		byte[] buffer = new byte[10000];
-		byte[] buffer1 = new byte[7284];
+		byte[] data = new byte[10000];
+		byte[] leftoverData = new byte[7284];
 
-		// Final buffer size to contain data (buffer + buffer1) 
-		byte[] bufferFinal = new byte[107273];	
+		// Final buffer size to contain data (data + leftoverData) 
+		byte[] finalData = new byte[107273];	
 
 		//	Datagram Packets for storage
-		//	HOW ARE WE INITIALIZING THESE TO MAKE SENSE?
-		DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-		DatagramPacket packet1 = new DatagramPacket(buffer1, buffer1.length);
+		DatagramPacket dataPacket = new DatagramPacket(data, data.length);
+		DatagramPacket leftoverDataPacket = new DatagramPacket(leftoverData, leftoverData.length);
 
-		//	Something...? Maybe starting a socket on this port?
 		//	Eventually want this syntax below...
-//		DatagramSocket socket = new DatagramSocket(receiver_port, receiver_ip_addr);
-		DatagramSocket socket = new DatagramSocket(receiver_port);
+		//	DatagramSocket socket = new DatagramSocket(receiver_port, receiver_ip_addr);
+		DatagramSocket dataReciever = new DatagramSocket(receiver_port);
 
 		//	Initial looping value and size...
-		int i=0;
-		int size=0;
+		int loopCounter = 0;
+		int size = 0;
 
 		//	Starting output...
 		System.out.println("packets received:");
+		
+		//-------------------------------------------------------
+		//														|
+		// 	AREA BELOW IS WHERE SHIT IS DONE					|
+		//														|
+		//-------------------------------------------------------
+		
+		while (loopCounter < 11) {
 
-		// Loop for when datapackets are recieved...
-		while (i<11) {
-
-			// final clause...
-			if (i==10) {
+			// final clause for leftover info...
+			if (loopCounter == 10) {
+				
 				//	Recieve info...
-				socket.receive(packet1);
-				buffer1 = packet1.getData();
+				dataReciever.receive(leftoverDataPacket);
+				leftoverData = leftoverDataPacket.getData();
 
 				//	Set and increment size...
 				int startSize = size;
-				size += packet1.getData().length -2;
+				size += leftoverDataPacket.getData().length -2;
 
 				//	Ouptut info...
-				System.out.println("Sequence number: " + buffer1[0] +", Offset start: " + startSize + ", Offset end: " + size);
-				System.arraycopy(buffer1, 1, bufferFinal, 0+(i*9999), 7283);
+				System.out.println("Sequence number: " + leftoverData[0] +", Offset start: " + startSize + ", Offset end: " + size);
+				System.arraycopy(leftoverData, 1, finalData, 0+(loopCounter*9999), 7283);
+				
 			} else {
 
-				//	Recieve info...
-				socket.receive(packet);
-				buffer = packet.getData();
+				//	When recieving data...
+				dataReciever.receive(dataPacket);
+				data = dataPacket.getData();
 
 				//	Set and increment size...
 				int startSize = size;
-				size += packet.getData().length -2;
+				size += dataPacket.getData().length -2;
 				size++;
 
 				//	Ouptut info...
-				System.out.println("Sequence number: " + buffer[0] +", Offset start: " + startSize + ", Offset end: " + size);
-				System.arraycopy(buffer, 1, bufferFinal, 0+(i*9999), 9999);
+				System.out.println("Sequence number: " + data[0] +", Offset start: " + startSize + ", Offset end: " + size);
+				System.arraycopy(data, 1, finalData, 0+(loopCounter*9999), 9999);
+				
 			}
 
 			//	Increment iterator no matter what
-			i++;   
+			loopCounter++;   
+			
 		}
 
 		//	Write the data...
 		FileOutputStream stream = new FileOutputStream("output.txt");
-		stream.write(bufferFinal);
+		stream.write(finalData);
 
 		//	Close streams so no data leaks...
-		socket.close();
+		dataReciever.close();
 		stream.close();
+		
 	}
-
-
 
 }
