@@ -22,7 +22,8 @@ class PacketSender {
 	//	1. Implement drop/corrupt/discard rate
 	//	2. Implement timeout and IP
 	//	3. Implement resend if packet lost
-	//	3. Get rid of leftover packet bullshit (optional maybe?)
+	//	4. Implement packet size
+	//	5. Get rid of leftover packet bullshit (optional maybe?)
 
 	//					  LET'S 'A GO~
 	//	

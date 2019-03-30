@@ -20,7 +20,7 @@ class PacketReceiver {
 	//	1. Implement drop/corrupt/discard rate
 	//	2. Implement IP
 	//	3. Implement different ACK
-	//	3. Get rid of leftover packet bullshit (optional maybe?)
+	//	4. Get rid of leftover packet bullshit (optional maybe?)
 
 	//					  LET'S 'A GO~
 	//	
