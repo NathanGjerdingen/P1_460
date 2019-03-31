@@ -118,9 +118,9 @@ class PacketSender {
 				
 				//	Here is send GOOD data
 				dataSender.send(new DatagramPacket(data, data.length, new InetSocketAddress("localhost", 8024)));
-				//	Here is send DROP data
+				//	Figure out how to send DROP data
 //				dataSender.send(new DatagramPacket(data, data.length, new InetSocketAddress("localhost", 8024)));
-				//	Here is send ERRR data
+				//	Figure out how to send ERRR data
 //				dataSender.send(new DatagramPacket(data, data.length, new InetSocketAddress("localhost", 8024)));
 
 				System.out.println( "[SENDing]: Sequence number: " + data[0] + ", " +
@@ -132,7 +132,12 @@ class PacketSender {
 				dataGramAccumulator++;
 				j=1;
 
-				//	Wait for ACK...
+				//-------------------------------------------------------
+				//														|
+				//  ACK POINT											|
+				//														|
+				//-------------------------------------------------------
+				
 				byte[] ackData = new byte[1];
 				DatagramPacket ackPacket = new DatagramPacket(new byte[1], 1);
 				dataSender.receive(ackPacket);

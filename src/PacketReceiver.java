@@ -55,6 +55,7 @@ class PacketReceiver {
 	static InetAddress receiver_ip_addr;
 	static int receiver_port = 8024;
 	
+	//	Flags for ACK's
 	static final int GOOD = 0;
 	static final int CORRUPT = 1;
 	static final int MOVEWND = 2;
@@ -87,16 +88,15 @@ class PacketReceiver {
 		// Final data size to contain data (data + leftoverData) 
 		byte[] finalData = new byte[107273];	
 
-		//	Eventually want this syntax below...
+		//	Init dataReciever...
 		DatagramSocket dataReciever = new DatagramSocket(receiver_port, receiver_ip_addr);
-//		DatagramSocket dataReciever = new DatagramSocket(receiver_port);
 
 		//	Initial looping value and size...
 		int loopCounter = 0;
 		int size = 0;
 
 		//	Starting output...
-		System.out.println("packets received:");
+		System.out.println("Awaiting data...");
 
 		//-------------------------------------------------------
 		//														|
@@ -107,6 +107,7 @@ class PacketReceiver {
 		while (loopCounter < 11) {
 
 			// final clause for leftover info...
+			// EVENTUALLY NEEDS TO BE REMOVED IF POSSIBLE.
 			if (loopCounter == 10) {
 
 				//	Recieve info...
@@ -128,6 +129,12 @@ class PacketReceiver {
 //				dataReciever.send(new DatagramPacket(new byte[] {MOVEWND}, 1, new InetSocketAddress("localhost", 8080)));
 				
 			} else {
+				
+				//-------------------------------------------------------
+				//														|
+				//  WORK HERE MOSTLY									|
+				//														|
+				//-------------------------------------------------------
 
 				//	When recieving data...
 				dataReciever.receive(dataRecieved);
