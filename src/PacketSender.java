@@ -19,7 +19,7 @@ class PacketSender {
 	//	java PacketSender -s 100 -t 30000 -d 0.25 127.0.0.1 8024
 
 	//	THINGS NEEDED TO BE DONE:
-	//	1. Implement drop/corrupt/discard rate
+	//	1. Implement drop/corrupt/discard send rate
 	//	2. Implement resend if packet lost
 	//	3. Implement variable packet size
 	//	4. Get rid of leftover packet bullshit (optional maybe?)

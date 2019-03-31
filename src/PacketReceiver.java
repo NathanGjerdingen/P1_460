@@ -9,6 +9,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.util.Random;
 
 
 class PacketReceiver {
@@ -18,8 +19,7 @@ class PacketReceiver {
 
 	//	THINGS NEEDED TO BE DONE:
 	//	1. Implement received drop/corrupt/discard datagrams
-	//	2. Implement sending CORRUPT/MOVEWND datagrams
-	//	3. Get rid of leftover packet bullshit (optional maybe?)
+	//	2. Get rid of leftover packet bullshit (optional maybe?)
 
 	//					  LET'S 'A GO~
 	//	
@@ -148,12 +148,17 @@ class PacketReceiver {
 				//	Ouptut info for user...
 				System.out.println("[RECV]: Sequence number: " + currentData[0] +", Offset start: " + startSize + ", Offset end: " + size);
 				System.arraycopy(currentData, 1, finalData, 0+(loopCounter*9999), 9999);
-
+				
 				//	Send ACK Packet(s) back to Data Sender
-				// 	0 = Good, 1 = corrupt, 2 = move window
-				dataReciever.send(new DatagramPacket(new byte[] {GOOD}, 1, new InetSocketAddress("localhost", 8080)));
-//				dataReciever.send(new DatagramPacket(new byte[] {CORRUPT}, 1, new InetSocketAddress("localhost", 8080)));
-//				dataReciever.send(new DatagramPacket(new byte[] {MOVEWND}, 1, new InetSocketAddress("localhost", 8080)));
+				if (new Random().nextInt(101) <= datagramsToCurrupt) {
+					if (new Random().nextInt(101) <= datagramsToCurrupt) {
+						dataReciever.send(new DatagramPacket(new byte[] {CORRUPT}, 1, new InetSocketAddress("localhost", 8080)));
+					} else {
+						dataReciever.send(new DatagramPacket(new byte[] {MOVEWND}, 1, new InetSocketAddress("localhost", 8080)));	
+					}
+				} else {
+					dataReciever.send(new DatagramPacket(new byte[] {GOOD}, 1, new InetSocketAddress("localhost", 8080)));
+				}
 			}
 
 			//	Increment iterator no matter what
