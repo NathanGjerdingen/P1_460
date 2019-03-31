@@ -14,13 +14,12 @@ import java.net.UnknownHostException;
 class PacketReceiver {
 
 	//	HOW TO RUN PROGRAM EXAMPLE:
-	//	java PacketReceiver -d 0.5 20.20.20.20 8024
+	//	java PacketReceiver -d 0.5 127.0.0.1 8024
 
 	//	THINGS NEEDED TO BE DONE:
-	//	1. Implement drop/corrupt/discard rate
-	//	2. Implement IP
-	//	3. Implement different ACK
-	//	4. Get rid of leftover packet bullshit (optional maybe?)
+	//	1. Implement received drop/corrupt/discard datagrams
+	//	2. Implement sending CORRUPT/MOVEWND datagrams
+	//	3. Get rid of leftover packet bullshit (optional maybe?)
 
 	//					  LET'S 'A GO~
 	//	
@@ -55,6 +54,10 @@ class PacketReceiver {
 	static int datagramsToCurrupt = 0;
 	static InetAddress receiver_ip_addr;
 	static int receiver_port = 8024;
+	
+	static final int GOOD = 0;
+	static final int CORRUPT = 1;
+	static final int MOVEWND = 2;
 
 	private static void setArgs(String[] args) throws UnknownHostException {
 
@@ -85,8 +88,8 @@ class PacketReceiver {
 		byte[] finalData = new byte[107273];	
 
 		//	Eventually want this syntax below...
-		//		DatagramSocket dataReciever = new DatagramSocket(receiver_port, receiver_ip_addr);
-		DatagramSocket dataReciever = new DatagramSocket(receiver_port);
+		DatagramSocket dataReciever = new DatagramSocket(receiver_port, receiver_ip_addr);
+//		DatagramSocket dataReciever = new DatagramSocket(receiver_port);
 
 		//	Initial looping value and size...
 		int loopCounter = 0;
@@ -119,8 +122,11 @@ class PacketReceiver {
 				System.arraycopy(leftoverData, 1, finalData, 0+(loopCounter*9999), 7283);
 
 				//	Send Acknowledgement Packet back to Data Sender
-				dataReciever.send(new DatagramPacket(new byte[] {0}, 1, new InetSocketAddress("localhost", 8080)));
-
+				// 	0 = Good, 1 = corrupt, 2 = move window
+				dataReciever.send(new DatagramPacket(new byte[] {GOOD}, 1, new InetSocketAddress("localhost", 8080)));
+//				dataReciever.send(new DatagramPacket(new byte[] {CORRUPT}, 1, new InetSocketAddress("localhost", 8080)));
+//				dataReciever.send(new DatagramPacket(new byte[] {MOVEWND}, 1, new InetSocketAddress("localhost", 8080)));
+				
 			} else {
 
 				//	When recieving data...
@@ -136,8 +142,11 @@ class PacketReceiver {
 				System.out.println("[RECV]: Sequence number: " + currentData[0] +", Offset start: " + startSize + ", Offset end: " + size);
 				System.arraycopy(currentData, 1, finalData, 0+(loopCounter*9999), 9999);
 
-				//	Send ACK Packet back to Data Sender
-				dataReciever.send(new DatagramPacket(new byte[] {0}, 1, new InetSocketAddress("localhost", 8080)));
+				//	Send ACK Packet(s) back to Data Sender
+				// 	0 = Good, 1 = corrupt, 2 = move window
+				dataReciever.send(new DatagramPacket(new byte[] {GOOD}, 1, new InetSocketAddress("localhost", 8080)));
+//				dataReciever.send(new DatagramPacket(new byte[] {CORRUPT}, 1, new InetSocketAddress("localhost", 8080)));
+//				dataReciever.send(new DatagramPacket(new byte[] {MOVEWND}, 1, new InetSocketAddress("localhost", 8080)));
 			}
 
 			//	Increment iterator no matter what

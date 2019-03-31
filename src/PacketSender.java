@@ -16,14 +16,13 @@ import java.nio.file.Files;
 class PacketSender {
 
 	//	HOW TO RUN PROGRAM EXAMPLE:
-	//	java PacketSender -s 100 -t 30000 -d 0.25 20.20.20.20 8024
+	//	java PacketSender -s 100 -t 30000 -d 0.25 127.0.0.1 8024
 
 	//	THINGS NEEDED TO BE DONE:
 	//	1. Implement drop/corrupt/discard rate
-	//	2. Implement timeout and IP
-	//	3. Implement resend if packet lost
-	//	4. Implement packet size
-	//	5. Get rid of leftover packet bullshit (optional maybe?)
+	//	2. Implement resend if packet lost
+	//	3. Implement variable packet size
+	//	4. Get rid of leftover packet bullshit (optional maybe?)
 
 	//					  LET'S 'A GO~
 	//	
@@ -83,9 +82,10 @@ class PacketSender {
 
 		//	Initialize socket for sending and file to send...
 		DatagramSocket dataSender = new DatagramSocket(8080);
+		dataSender.setSoTimeout(datagramTimeout);
 
 		// Initialize data sizes and Datagram Packets for storage
-		//	byte[] data = new byte[datagramSize];
+//		byte[] data = new byte[datagramSize];
 		byte[] data = new byte[10000];
 
 		//	Initialize file to send...
@@ -115,7 +115,13 @@ class PacketSender {
 			data[j] = fileData[i];
 
 			if (j%9999 == 0) {
+				
+				//	Here is send GOOD data
 				dataSender.send(new DatagramPacket(data, data.length, new InetSocketAddress("localhost", 8024)));
+				//	Here is send DROP data
+//				dataSender.send(new DatagramPacket(data, data.length, new InetSocketAddress("localhost", 8024)));
+				//	Here is send ERRR data
+//				dataSender.send(new DatagramPacket(data, data.length, new InetSocketAddress("localhost", 8024)));
 
 				System.out.println( "[SENDing]: Sequence number: " + data[0] + ", " +
 						"Offset start: " + (0+9999*k) + ", " +
@@ -131,8 +137,13 @@ class PacketSender {
 				DatagramPacket ackPacket = new DatagramPacket(new byte[1], 1);
 				dataSender.receive(ackPacket);
 				ackData = ackPacket.getData();
+				
 				if (ackData[0] == 0) {
 					System.out.println("[AckRcvd]: " + dataGramAccumulator);
+				} else if (ackData[0] == 1) {
+					System.out.println("[ErrAck]: " + dataGramAccumulator);
+				} else {
+					System.out.println("[MoveWnd]: " + dataGramAccumulator);
 				}
 			}
 		}
