@@ -99,11 +99,16 @@ class PacketReceiver {
 				System.out.println("[RECV]: Sequence number: " + leftoverData[0] +", Offset start: " + startSize + ", Offset end: " + size);
 				System.arraycopy(leftoverData, 1, finalData, 0+(loopCounter*9999), 7283);
 
-				//	Send Acknowledgement Packet back to Data Sender
-				// 	0 = Good, 1 = corrupt, 2 = move window
-				dataReciever.send(new DatagramPacket(new byte[] {GOOD}, 1, new InetSocketAddress("localhost", 8080)));
-//				dataReciever.send(new DatagramPacket(new byte[] {CORRUPT}, 1, new InetSocketAddress("localhost", 8080)));
-//				dataReciever.send(new DatagramPacket(new byte[] {MOVEWND}, 1, new InetSocketAddress("localhost", 8080)));
+//				Send ACK Packet(s) back to Data Sender
+				if (new Random().nextInt(101) <= datagramsToCurrupt) {
+					if (new Random().nextInt(101) <= datagramsToCurrupt) {
+						dataReciever.send(new DatagramPacket(new byte[] {CORRUPT}, 1, new InetSocketAddress("localhost", 8080)));
+					} else {
+						dataReciever.send(new DatagramPacket(new byte[] {MOVEWND}, 1, new InetSocketAddress("localhost", 8080)));	
+					}
+				} else {
+					dataReciever.send(new DatagramPacket(new byte[] {GOOD}, 1, new InetSocketAddress("localhost", 8080)));
+				}
 				
 			} else {
 				
