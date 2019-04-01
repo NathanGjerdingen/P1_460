@@ -20,6 +20,7 @@ class PacketSender {
 
 	//	THINGS NEEDED TO BE DONE:
 	//	1. Implement drop/discard send rate
+	//  2. if statement for corrupt packets
 	//	3. Implement variable packet size
 	//	4. Get rid of leftover packet bullshit (optional maybe?)
 
@@ -89,6 +90,11 @@ class PacketSender {
 			//	Give accumulator what's currently in dataGramAccumulator @ pos i...
 			data[0] = dataGramAccumulator;
 			data[1] = 0;
+			//-------------------------------------------------------
+			//														|
+			// 	FOR SOME REASON THE CODE BYBASSES THE IF STATEMENT  |
+			//														|
+			//-------------------------------------------------------
 			if(corruptPacketCounter < datagramsToCurrupt) {
 				data[1] = 1;
 				corruptPacketCounter++;
