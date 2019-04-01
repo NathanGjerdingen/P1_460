@@ -74,6 +74,16 @@ class PacketReceiver {
 
 		//	Starting output...
 		System.out.println("Awaiting data...");
+		
+		/*
+		 * byte[] something = new byte[2];
+		 * DatagramPacket info = new DatagramPacket(something, something.length);
+		 * something = info.getData();
+		 * dataReciever.receive(info);
+		 * int dataSize = something[0];
+		 * int numOfPackets = something[1];
+		 * 
+		 */
 
 		//-------------------------------------------------------
 		//														|

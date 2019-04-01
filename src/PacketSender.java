@@ -83,6 +83,12 @@ class PacketSender {
 		// 	AREA BELOW IS WHERE SHIT IS DONE					|
 		//														|
 		//-------------------------------------------------------
+		/*
+		 * Sending packet containing the datagramSize and the number of packets that will be sent
+		 * 
+		 * dataSender.send(new DatagramPacket(new byte[] {(byte) datagramSize,(byte) (file.length()/datagramSize)}, 2, new InetSocketAddress("localhost", 8024)));
+		 */
+		
 		System.out.println(datagramsToCurrupt);
 		for (int i = 1; i < fileData.length; i++,j++) {
 
