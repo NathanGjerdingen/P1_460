@@ -121,26 +121,34 @@ class PacketReceiver {
 				//	When recieving data...
 				dataReciever.receive(dataRecieved);
 				currentData = dataRecieved.getData();
+				//System.out.println(currentData[1]);
+				if (currentData[1] == 1) {
+					dataReciever.send(new DatagramPacket(new byte[] {CORRUPT}, 1, new InetSocketAddress("localhost", 8080)));
+					dataReciever.receive(dataRecieved);
+					currentData = dataRecieved.getData();
+					System.out.println(currentData[0]);
+				}
 
 				//	Set ALL the things...
 				int startSize = size;
-				size += dataRecieved.getData().length -2;
+				size += dataRecieved.getData().length -3;
 				size++;
 
 				//	Ouptut info for user...
 				System.out.println("[RECV]: Sequence number: " + currentData[0] +", Offset start: " + startSize + ", Offset end: " + size);
-				System.arraycopy(currentData, 1, finalData, 0+(loopCounter*9999), 9999);
+				System.arraycopy(currentData, 2, finalData, 0+(loopCounter*9998), 9998);
+				dataReciever.send(new DatagramPacket(new byte[] {GOOD}, 1, new InetSocketAddress("localhost", 8080)));
 				
 				//	Send ACK Packet(s) back to Data Sender
-				if (new Random().nextInt(101) <= datagramsToCurrupt) {
-					if (new Random().nextInt(101) <= datagramsToCurrupt) {
-						dataReciever.send(new DatagramPacket(new byte[] {CORRUPT}, 1, new InetSocketAddress("localhost", 8080)));
-					} else {
-						dataReciever.send(new DatagramPacket(new byte[] {MOVEWND}, 1, new InetSocketAddress("localhost", 8080)));	
-					}
-				} else {
-					dataReciever.send(new DatagramPacket(new byte[] {GOOD}, 1, new InetSocketAddress("localhost", 8080)));
-				}
+				//if (new Random().nextInt(101) <= datagramsToCurrupt) {
+					//if (new Random().nextInt(101) <= datagramsToCurrupt) {
+						//dataReciever.send(new DatagramPacket(new byte[] {CORRUPT}, 1, new InetSocketAddress("localhost", 8080)));
+					//} else {
+						//dataReciever.send(new DatagramPacket(new byte[] {MOVEWND}, 1, new InetSocketAddress("localhost", 8080)));	
+					//}
+				//} else {
+					//dataReciever.send(new DatagramPacket(new byte[] {GOOD}, 1, new InetSocketAddress("localhost", 8080)));
+				//}
 			}
 
 			//	Increment iterator no matter what
