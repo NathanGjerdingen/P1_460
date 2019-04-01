@@ -59,8 +59,8 @@ class PacketSender {
 		dataSender.setSoTimeout(datagramTimeout);
 
 		// Initialize data sizes and Datagram Packets for storage
-//		byte[] data = new byte[datagramSize];
-		byte[] data = new byte[10000];
+		byte[] data = new byte[datagramSize];
+//		byte[] data = new byte[10000];
 
 		//	Initialize file to send...
 		File file = new File("alice29.txt");
@@ -99,7 +99,8 @@ class PacketSender {
 			}
 			data[j] = fileData[i];
 
-			if (j%9999 == 0) {
+		//	if (j%9999 == 0) {
+			if (j%(datagramSize-1) == 0) {
 				
 				//	Here is send GOOD data
 				DatagramPacket packet = new DatagramPacket(data, data.length, new InetSocketAddress("localhost", 8024));
@@ -110,10 +111,14 @@ class PacketSender {
 				//	Figure out how to send ERRR data
 //				dataSender.send(new DatagramPacket(data, data.length, new InetSocketAddress("localhost", 8024)));
 
+				/*
 				System.out.println( "[SENDing]: Sequence number: " + data[0] + ", " +
 						"Offset start: " + (0+9998*k) + ", " +
 						"Offset end: " + (9997+9998*k));
-
+						*/
+				System.out.println("[Sending]: Sequence number: " + data[0] + ", " +
+						"Offset start: " + (0+(datagramSize-2)*k) + ", " +
+						"Offset end: " + ((datagramSize-3)+(datagramSize-2)*k));
 				// Increment ALL the things
 				k++;
 				dataGramAccumulator++;
@@ -154,8 +159,9 @@ class PacketSender {
 		}
 
 		// temp is the size of what is remaining in the input file after full size datagrams are sent
-		int temp = fileData.length-(dataGramAccumulator-1)*9998;
-
+		//int temp = fileData.length-(dataGramAccumulator-1)*9998;
+		int temp = fileData.length-(dataGramAccumulator-1)*(datagramSize-2);
+		
 		// send the last datagram that is not of full size
 		System.arraycopy(data, 0, leftoverData, 0, temp);
 		dataSender.send(new DatagramPacket(leftoverData, temp, new InetSocketAddress("localhost", 8024)));
