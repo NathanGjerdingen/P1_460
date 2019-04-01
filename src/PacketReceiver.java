@@ -59,11 +59,11 @@ class PacketReceiver {
 		DatagramPacket dataRecieved = new DatagramPacket(currentData, currentData.length);
 
 		// EVENTUALLY NEEDS TO BE REMOVED IF POSSIBLE.
-		byte[] leftoverData = new byte[7284];
+		byte[] leftoverData = new byte[2119];
 		DatagramPacket leftoverDataPacket = new DatagramPacket(leftoverData, leftoverData.length);
 
 		// Final data size to contain data (data + leftoverData) 
-		byte[] finalData = new byte[107273];	
+		byte[] finalData = new byte[152089];	
 
 		//	Init dataReciever...
 		DatagramSocket dataReciever = new DatagramSocket(receiver_port, receiver_ip_addr);
@@ -81,11 +81,11 @@ class PacketReceiver {
 		//														|
 		//-------------------------------------------------------
 
-		while (loopCounter < 11) {
+		while (loopCounter < 16) {
 
 			// final clause for leftover info...
 			// EVENTUALLY NEEDS TO BE REMOVED IF POSSIBLE.
-			if (loopCounter == 10) {
+			if (loopCounter == 15) {
 
 				//	Recieve info...
 				dataReciever.receive(leftoverDataPacket);
@@ -97,7 +97,7 @@ class PacketReceiver {
 
 				//	Ouptut info...
 				System.out.println("[RECV]: Sequence number: " + leftoverData[0] +", Offset start: " + startSize + ", Offset end: " + size);
-				System.arraycopy(leftoverData, 1, finalData, 0+(loopCounter*9999), 7283);
+				System.arraycopy(leftoverData, 1, finalData, 0+(loopCounter*9998), 2118);
 
 //				Send ACK Packet(s) back to Data Sender
 				if (new Random().nextInt(101) <= datagramsToCurrupt) {
@@ -121,23 +121,24 @@ class PacketReceiver {
 				//	When recieving data...
 				dataReciever.receive(dataRecieved);
 				currentData = dataRecieved.getData();
-				//System.out.println(currentData[1]);
 				if (currentData[1] == 1) {
 					dataReciever.send(new DatagramPacket(new byte[] {CORRUPT}, 1, new InetSocketAddress("localhost", 8080)));
+					System.out.println("[CRPT]: Sequence number: " + currentData[0] + " requesting resend");
 					dataReciever.receive(dataRecieved);
 					currentData = dataRecieved.getData();
-					System.out.println(currentData[0]);
+					
 				}
 
 				//	Set ALL the things...
 				int startSize = size;
 				size += dataRecieved.getData().length -3;
-				size++;
+				//size++;
 
 				//	Ouptut info for user...
 				System.out.println("[RECV]: Sequence number: " + currentData[0] +", Offset start: " + startSize + ", Offset end: " + size);
 				System.arraycopy(currentData, 2, finalData, 0+(loopCounter*9998), 9998);
 				dataReciever.send(new DatagramPacket(new byte[] {GOOD}, 1, new InetSocketAddress("localhost", 8080)));
+				size++;
 				
 				//	Send ACK Packet(s) back to Data Sender
 				//if (new Random().nextInt(101) <= datagramsToCurrupt) {

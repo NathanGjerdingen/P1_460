@@ -19,8 +19,7 @@ class PacketSender {
 	//	java PacketSender -s 100 -t 30000 -d 0.25 127.0.0.1 8024
 
 	//	THINGS NEEDED TO BE DONE:
-	//	1. Implement drop/corrupt/discard send rate
-	//	2. Implement resend if packet lost
+	//	1. Implement drop/discard send rate
 	//	3. Implement variable packet size
 	//	4. Get rid of leftover packet bullshit (optional maybe?)
 
@@ -43,7 +42,7 @@ class PacketSender {
 			//	Set static variable from args...
 			datagramSize = Integer.parseInt(args[1]);
 			datagramTimeout = Integer.parseInt(args[3]); 
-			datagramsToCurrupt = (int) (Double.parseDouble(args[5]) * 100);
+			datagramsToCurrupt = (int) (Double.parseDouble(args[5])*16);
 			receiver_ip_addr = InetAddress.getByName(args[6]);
 			receiver_port = Integer.parseInt(args[7]);
 		}
@@ -59,21 +58,19 @@ class PacketSender {
 		dataSender.setSoTimeout(datagramTimeout);
 
 		// Initialize data sizes and Datagram Packets for storage
-		byte[] data = new byte[datagramSize];
-//		byte[] data = new byte[10000];
+//		byte[] data = new byte[datagramSize];
+		byte[] data = new byte[10000];
 
 		//	Initialize file to send...
 		File file = new File("alice29.txt");
 		byte[] fileData = Files.readAllBytes(file.toPath());
 
 		//	leftoverData is just the last unsized part of the sender...
-		byte[] leftoverData = new byte[7284];
+		byte[] leftoverData = new byte[2119];
 
 		// used to keep track of total datagrams sent 
 		byte dataGramAccumulator = 1;
 		
-		// checksum for corrupt packets
-		byte checksum = 0;
 		
 		int corruptPacketCounter = 0;
 
@@ -86,21 +83,19 @@ class PacketSender {
 		// 	AREA BELOW IS WHERE SHIT IS DONE					|
 		//														|
 		//-------------------------------------------------------
-
+		System.out.println(datagramsToCurrupt);
 		for (int i = 1; i < fileData.length; i++,j++) {
 
 			//	Give accumulator what's currently in dataGramAccumulator @ pos i...
 			data[0] = dataGramAccumulator;
-			if (corruptPacketCounter < datagramsToCurrupt) {
+			data[1] = 0;
+			if(corruptPacketCounter < datagramsToCurrupt) {
 				data[1] = 1;
 				corruptPacketCounter++;
-			} else {
-				data[1] = 1;
-			}
+			} 
 			data[j] = fileData[i];
 
-		//	if (j%9999 == 0) {
-			if (j%(datagramSize-1) == 0) {
+			if (j%9999 == 0) {
 				
 				//	Here is send GOOD data
 				DatagramPacket packet = new DatagramPacket(data, data.length, new InetSocketAddress("localhost", 8024));
@@ -111,14 +106,10 @@ class PacketSender {
 				//	Figure out how to send ERRR data
 //				dataSender.send(new DatagramPacket(data, data.length, new InetSocketAddress("localhost", 8024)));
 
-				/*
 				System.out.println( "[SENDing]: Sequence number: " + data[0] + ", " +
 						"Offset start: " + (0+9998*k) + ", " +
 						"Offset end: " + (9997+9998*k));
-						*/
-				System.out.println("[Sending]: Sequence number: " + data[0] + ", " +
-						"Offset start: " + (0+(datagramSize-2)*k) + ", " +
-						"Offset end: " + ((datagramSize-3)+(datagramSize-2)*k));
+
 				// Increment ALL the things
 				k++;
 				dataGramAccumulator++;
@@ -136,32 +127,31 @@ class PacketSender {
 				ackData = ackPacket.getData();
 				
 				if (ackData[0] == 0) {
-					System.out.println("[AckRcvd]: " + dataGramAccumulator);
+					System.out.println("[AckRcvd]: " + (dataGramAccumulator-1));
 				} else if (ackData[0] == 1) {
-					System.out.println("[ErrAck]: " + dataGramAccumulator);
+					System.out.println("[ErrAck]: " + (dataGramAccumulator-1));
 					data[1] = 0;
 					packet.setData(data);
 					dataSender.send(packet);
-					System.out.println( "[SENDing]: Sequence number: " + data[0] + ", " +
+					System.out.println( "[RESENDing]: Sequence number: " + data[0] + ", " +
 							"Offset start: " + (0+9998*k) + ", " +
 							"Offset end: " + (9997+9998*k));
 					dataSender.receive(ackPacket);
 					ackData = ackPacket.getData();
 					if (ackData[0] == 0) {
-						System.out.println("[AckRcvd]: " + dataGramAccumulator);
+						System.out.println("[AckRcvd]: " + (dataGramAccumulator-1));
 					}
 					
 				} else {
-					System.out.println("[MoveWnd]: " + dataGramAccumulator);
+					System.out.println("[MoveWnd]: " + (dataGramAccumulator-1));
 				}
 			}
 			
 		}
 
 		// temp is the size of what is remaining in the input file after full size datagrams are sent
-		//int temp = fileData.length-(dataGramAccumulator-1)*9998;
-		int temp = fileData.length-(dataGramAccumulator-1)*(datagramSize-2);
-		
+		int temp = fileData.length-(dataGramAccumulator-1)*9998;
+
 		// send the last datagram that is not of full size
 		System.arraycopy(data, 0, leftoverData, 0, temp);
 		dataSender.send(new DatagramPacket(leftoverData, temp, new InetSocketAddress("localhost", 8024)));
