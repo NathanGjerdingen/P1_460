@@ -3,6 +3,7 @@
  * then output the data recieved to a save file
  */
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -72,18 +73,26 @@ class PacketReceiver {
 		int loopCounter = 0;
 		int size = 0;
 
+		// Initialize Alice
+		File file = new File("../alice29.txt");
+
 		//	Starting output...
 		System.out.println("Awaiting data...");
 		
-		/*
-		 * byte[] something = new byte[2];
-		 * DatagramPacket info = new DatagramPacket(something, something.length);
-		 * something = info.getData();
-		 * dataReciever.receive(info);
-		 * int dataSize = something[0];
-		 * int numOfPackets = something[1];
-		 * 
-		 */
+		
+	
+		
+		
+		
+		
+		//	Recieve sizing flags...
+		byte[] something = new byte[1];
+		DatagramPacket info = new DatagramPacket(something, something.length);
+		something = info.getData();
+		dataReciever.receive(info);
+		int dataSize = something[0];		
+		int loopAmount = (int) (file.length() / dataSize);
+		
 
 		//-------------------------------------------------------
 		//														|
@@ -91,11 +100,11 @@ class PacketReceiver {
 		//														|
 		//-------------------------------------------------------
 
-		while (loopCounter < 16) {
+		while (loopCounter < loopAmount) {
 
 			// final clause for leftover info...
 			// EVENTUALLY NEEDS TO BE REMOVED IF POSSIBLE.
-			if (loopCounter == 15) {
+			if (loopCounter == loopAmount-1) {
 
 				//	Recieve info...
 				dataReciever.receive(leftoverDataPacket);
@@ -107,7 +116,7 @@ class PacketReceiver {
 
 				//	Ouptut info...
 				System.out.println("[RECV]: Sequence number: " + leftoverData[0] +", Offset start: " + startSize + ", Offset end: " + size);
-				System.arraycopy(leftoverData, 1, finalData, 0+(loopCounter*9998), 2118);
+				System.arraycopy(leftoverData, 1, finalData, 0+(loopCounter*(dataSize-2)), 2118);
 
 //				Send ACK Packet(s) back to Data Sender
 				if (new Random().nextInt(101) <= datagramsToCurrupt) {
@@ -146,7 +155,7 @@ class PacketReceiver {
 
 				//	Ouptut info for user...
 				System.out.println("[RECV]: Sequence number: " + currentData[0] +", Offset start: " + startSize + ", Offset end: " + size);
-				System.arraycopy(currentData, 2, finalData, 0+(loopCounter*9998), 9998);
+				System.arraycopy(currentData, 2, finalData, 0+(loopCounter*(dataSize-2)), (dataSize-2));
 				dataReciever.send(new DatagramPacket(new byte[] {GOOD}, 1, new InetSocketAddress("localhost", 8080)));
 				size++;
 				
