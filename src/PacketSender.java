@@ -153,10 +153,10 @@ class PacketSender {
 				DatagramPacket ackPacket = new DatagramPacket(new byte[1], 1);
 				dataSender.receive(ackPacket);
 				ackData = ackPacket.getData();
-				
-				if (ackData[0] == 0) {
-					System.out.println("[AckRcvd]: " + (dataGramAccumulator-1));
-				} else if (ackData[0] == CORRUPT) {
+				while(ackData[0] !=0) {
+				//if (ackData[0] == 0) {
+					//System.out.println("[AckRcvd]: " + (dataGramAccumulator-1));
+				  if (ackData[0] == CORRUPT) {
 					System.out.println("[ErrAck]: " + (dataGramAccumulator-1));
 					data[1] = 0;
 					packet.setData(data);
@@ -182,9 +182,11 @@ class PacketSender {
 					if (ackData[0] == 0) {
 							System.out.println("[AckRcvd]: " + (dataGramAccumulator-1));
 				}
-				}else {
-					System.out.println("[MoveWnd]: " + (dataGramAccumulator-1));
+				}//else {
+					//System.out.println("[MoveWnd]: " + (dataGramAccumulator-1));
+				//}
 				}
+				System.out.println("[AckRcvd]: " + (dataGramAccumulator-1));
 			
 			}
 			

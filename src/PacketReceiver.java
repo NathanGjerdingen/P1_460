@@ -128,11 +128,26 @@ class PacketReceiver {
 
 
 			//	Set ALL the things...
+			
+			boolean run= true;
+			while(run) {
+			int rand = new Random().nextInt(101);
+			if (rand <= datagramsToCurrupt) {
+				if (rand%2 == 0) {
+					dataReciever.send(new DatagramPacket(new byte[] {CORRUPT}, 1, new InetSocketAddress("localhost", 8080)));
+					dataReciever.receive(dataRecieved);
+					currentData = dataRecieved.getData();
+				} //else {
+					//dataReciever.send(new DatagramPacket(new byte[] {MOVEWND}, 1, new InetSocketAddress("localhost", 8080)));	
+				//}
+			} else {
+				dataReciever.send(new DatagramPacket(new byte[] {GOOD}, 1, new InetSocketAddress("localhost", 8080)));
+				run = false;
+			}
+			}
 			int startSize = size;
 			size += dataRecieved.getData().length -3;
 			size++;
-
-			dataReciever.send(new DatagramPacket(new byte[] {GOOD}, 1, new InetSocketAddress("localhost", 8080)));
 			System.out.println("[RECV]: Sequence number: " + currentData[0] +", Offset start: " + startSize + ", Offset end: " + size);
 			System.arraycopy(currentData, 2, writeData, 0, dataSize-2 );
 			stream.write(writeData);
@@ -145,16 +160,16 @@ class PacketReceiver {
 
 			//	Send ACK Packet(s) back to Data Sender
 			
-			int rand = new Random().nextInt(101);
-			if (rand <= datagramsToCurrupt) {
-				if (rand%2 == 0) {
-					dataReciever.send(new DatagramPacket(new byte[] {CORRUPT}, 1, new InetSocketAddress("localhost", 8080)));
-				} else {
-					dataReciever.send(new DatagramPacket(new byte[] {MOVEWND}, 1, new InetSocketAddress("localhost", 8080)));	
-				}
-			} else {
-				dataReciever.send(new DatagramPacket(new byte[] {GOOD}, 1, new InetSocketAddress("localhost", 8080)));
-			}
+//			int rand = new Random().nextInt(101);
+//			if (rand <= datagramsToCurrupt) {
+//				if (rand%2 == 0) {
+//					dataReciever.send(new DatagramPacket(new byte[] {CORRUPT}, 1, new InetSocketAddress("localhost", 8080)));
+//				} else {
+//					dataReciever.send(new DatagramPacket(new byte[] {MOVEWND}, 1, new InetSocketAddress("localhost", 8080)));	
+//				}
+//			} else {
+//				dataReciever.send(new DatagramPacket(new byte[] {GOOD}, 1, new InetSocketAddress("localhost", 8080)));
+//			}
 
 			//	Increment iterator no matter what
 //			loopCounter++;   
