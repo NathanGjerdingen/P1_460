@@ -121,22 +121,25 @@ class PacketReceiver {
 			
 			if (currentData[1] == DROP) {
 				dataReciever.send(new DatagramPacket(new byte[] {DROP}, 1, new InetSocketAddress("localhost", 8080)));
-				System.out.println("[DROP]: Sequence number: " + currentData[0] + " requesting resend");
+				System.out.println("[TO]: Sequence number: " + currentData[0] + " requesting resend");
 				dataReciever.receive(dataRecieved);
 				currentData = dataRecieved.getData();
 			}
+			
+
 
 			//	Set ALL the things...
 			int startSize = size;
 			size += dataRecieved.getData().length -3;
 			size++;
 
-
+			dataReciever.send(new DatagramPacket(new byte[] {GOOD}, 1, new InetSocketAddress("localhost", 8080)));
+			System.out.println("[RECV]: Sequence number: " + currentData[0] +", Offset start: " + startSize + ", Offset end: " + size);
 
 			//	Ouptut info for user...
-			System.out.println("[RECV]: Sequence number: " + currentData[0] +", Offset start: " + startSize + ", Offset end: " + size);
+			
 //			System.arraycopy(currentData, 2, finalData, 0+(loopCounter*(dataSize-2)), (dataSize-2));
-//			dataReciever.send(new DatagramPacket(new byte[] {GOOD}, 1, new InetSocketAddress("localhost", 8080)));
+			
 //			size++;
 
 			//	Send ACK Packet(s) back to Data Sender

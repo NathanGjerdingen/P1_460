@@ -155,7 +155,7 @@ class PacketSender {
 				
 				if (ackData[0] == 0) {
 					System.out.println("[AckRcvd]: " + (dataGramAccumulator-1));
-				} else if (ackData[0] == 1) {
+				} else if (ackData[0] == CORRUPT) {
 					System.out.println("[ErrAck]: " + (dataGramAccumulator-1));
 					data[1] = 0;
 					packet.setData(data);
@@ -167,8 +167,21 @@ class PacketSender {
 					ackData = ackPacket.getData();
 					if (ackData[0] == 0) {
 						System.out.println("[AckRcvd]: " + (dataGramAccumulator-1));
-					}
-				} else {
+					} 
+				} else if (ackData[0] == DROP) {
+					System.out.println("[ErrAck]: " + (dataGramAccumulator-1));
+					data[1] = 0;
+					packet.setData(data);
+					dataSender.send(packet);
+					System.out.println( "[RESENDing]: Sequence number: " + data[0] + ", " +
+								"Offset start: " + (0+(datagramSize-2)*k) + ", " +
+								"Offset end: " + ((datagramSize-3)+(datagramSize-2)*k));
+					dataSender.receive(ackPacket);
+					ackData = ackPacket.getData();
+					if (ackData[0] == 0) {
+							System.out.println("[AckRcvd]: " + (dataGramAccumulator-1));
+				}
+				}else {
 					System.out.println("[MoveWnd]: " + (dataGramAccumulator-1));
 				}
 			
