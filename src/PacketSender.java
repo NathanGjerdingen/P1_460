@@ -12,6 +12,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
+import java.util.Random;
 
 class PacketSender {
 
@@ -32,6 +33,13 @@ class PacketSender {
 	static int datagramsToCurrupt = 0;
 	static InetAddress receiver_ip_addr;
 	static int receiver_port = 8024;
+	
+	static final int GOOD = 0;
+	static final int CORRUPT = 1;
+	static final int MOVEWND = 2;
+	static final int DROP = 1;
+
+
 
 	private static void setArgs(String[] args) throws UnknownHostException {
 
@@ -101,13 +109,30 @@ class PacketSender {
 //				corruptPacketCounter++;
 //			} 
 			
+			
+			
+			
 			DatagramPacket packet = new DatagramPacket(data, data.length, new InetSocketAddress("localhost", 8024));
 
 			
 			if (j%(datagramSize-1) == 0) {
 				
-				dataSender.send(packet);
-
+				if (new Random().nextInt(101) <= datagramsToCurrupt) {
+					if (new Random().nextInt(101) <= datagramsToCurrupt) {
+						data[1] = CORRUPT;
+						packet.setData(data);
+						dataSender.send(packet);
+					} else {
+						data[1] = DROP;
+						packet.setData(data);
+						dataSender.send(packet);
+					}
+				} else {
+					data[1] = GOOD;
+					packet.setData(data);
+					dataSender.send(packet);
+				}
+				
 				System.out.println( "[SENDing]: Sequence number: " + data[0] + ", " +
 						"Offset start: " + (0+(datagramSize-2)*k) + ", " +
 						"Offset end: " + ((datagramSize-3)+(datagramSize-2)*k));
@@ -146,9 +171,7 @@ class PacketSender {
 				} else {
 					System.out.println("[MoveWnd]: " + (dataGramAccumulator-1));
 				}
-				
-
-				
+			
 			}
 			
 			if (i == file.length()-1) {
