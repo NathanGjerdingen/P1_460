@@ -56,13 +56,6 @@ class PacketReceiver {
 		setArgs(args);
 
 
-
-		// EVENTUALLY NEEDS TO BE REMOVED IF POSSIBLE.
-		byte[] leftoverData = new byte[2119];
-		DatagramPacket leftoverDataPacket = new DatagramPacket(leftoverData, leftoverData.length);
-
-	
-
 		//	Init dataReciever...
 		DatagramSocket dataReciever = new DatagramSocket(receiver_port, receiver_ip_addr);
 
@@ -74,7 +67,7 @@ class PacketReceiver {
 		File file = new File("../alice29.txt");
 		
 		// Initialize Output...
-		FileOutputStream stream = new FileOutputStream("output.txt");
+		FileOutputStream stream = new FileOutputStream("../output.txt");
 
 		//	Starting output...
 		System.out.println("Awaiting data...");
@@ -102,10 +95,12 @@ class PacketReceiver {
 		//														|
 		//-------------------------------------------------------
 		
-		System.out.println("\n\n" + loopAmount + "\n\n");
+		System.out.println("\n\n loopAmount: " + loopAmount);
+		System.out.println("dataSize: " + dataSize);
+		System.out.println("file length: " + (int) file.length() + "\n\n");
 		
 
-		while (loopCounter < loopAmount-2) {
+		while (loopCounter < loopAmount+1) {
 
 
 			//	When recieving data...

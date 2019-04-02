@@ -16,7 +16,7 @@ import java.nio.file.Files;
 class PacketSender {
 
 	//	HOW TO RUN PROGRAM EXAMPLE:
-	//	java PacketSender -s 10000 -t 30000 -d 0.25 127.0.0.1 8024
+	//	java PacketSender -s 100 -t 30000 -d 0.25 127.0.0.1 8024
 
 	//	THINGS NEEDED TO BE DONE:
 	//	1. Implement drop/discard send rate
