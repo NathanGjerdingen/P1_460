@@ -21,18 +21,11 @@ class PacketReceiver {
 	//	HOW TO RUN PROGRAM EXAMPLE:
 	//	java PacketReceiver -d 0.5 127.0.0.1 8024
 
-	//	THINGS NEEDED TO BE DONE:
-	//	1. Implement received drop/corrupt/discard datagrams
-	//	2. Get rid of leftover packet bullshit (optional maybe?)
-	
-	
-	
-	
 	//	Initialize static variables with default vals...
 	static int datagramsToCurrupt = 0;
 	static InetAddress receiver_ip_addr;
 	static int receiver_port = 8024;
-	
+
 	//	Flags for ACK's
 	static final int GOOD = 0;
 	static final int CORRUPT = 1;
@@ -60,19 +53,18 @@ class PacketReceiver {
 		DatagramSocket dataReciever = new DatagramSocket(receiver_port, receiver_ip_addr);
 
 		//	Initial looping value and size...
-//		int loopCounter = 0;
 		int size = 0;
 
 		// Initialize Alice...
 		File file = new File("alice29.txt");
-		
+
 		// Initialize Output...
-//		PrintWriter stream = new PrintWriter("../output.txt");
+		//		PrintWriter stream = new PrintWriter("../output.txt");
 		FileOutputStream stream = new FileOutputStream("output.txt");
 
 		//	Starting output...
 		System.out.println("Awaiting data...");
-		
+
 		//	Recieve sizing flags...
 		byte[] something = new byte[1];
 		DatagramPacket info = new DatagramPacket(something, something.length);
@@ -80,36 +72,26 @@ class PacketReceiver {
 		dataReciever.receive(info);
 		int dataSize = something[0];		
 		int loopAmount = ((int) file.length() / dataSize);
-		
-
 
 		// Initialize data sizes and Datagram Packets for storage
 		byte[] currentData = new byte[dataSize];
 		DatagramPacket dataRecieved = new DatagramPacket(currentData, currentData.length);
-		
+
 		// Final data size to contain data (data + leftoverData) 
 		byte[] finalData = new byte[(int) file.length()];
 		byte[] writeData = new byte[dataSize-2];
-		
+
 		//-------------------------------------------------------
 		//														|
 		// 	AREA BELOW IS WHERE SHIT IS DONE					|
 		//														|
 		//-------------------------------------------------------
-		
-		System.out.println("\n\n loopAmount: " + loopAmount);
-		System.out.println("dataSize: " + dataSize);
-		System.out.println("file length: " + (int) file.length() + "\n\n");
-		
-		while (true) {
 
+		while (true) {
 
 			//	When recieving data...
 			dataReciever.receive(dataRecieved);
-			
-			
 			currentData = dataRecieved.getData();
-			
 
 			if (currentData[1] == CORRUPT) {
 				dataReciever.send(new DatagramPacket(new byte[] {CORRUPT}, 1, new InetSocketAddress("localhost", 8080)));
@@ -117,33 +99,31 @@ class PacketReceiver {
 				dataReciever.receive(dataRecieved);
 				currentData = dataRecieved.getData();
 			}
-			
+
 			if (currentData[1] == DROP) {
 				dataReciever.send(new DatagramPacket(new byte[] {DROP}, 1, new InetSocketAddress("localhost", 8080)));
 				System.out.println("[TO]: Sequence number: " + currentData[0] + " requesting resend");
 				dataReciever.receive(dataRecieved);
 				currentData = dataRecieved.getData();
 			}
-			
+
 
 
 			//	Set ALL the things...
-			
+
 			boolean run= true;
 			while(run) {
-			int rand = new Random().nextInt(101);
-			if (rand <= datagramsToCurrupt) {
-				if (rand%2 == 0) {
-					dataReciever.send(new DatagramPacket(new byte[] {CORRUPT}, 1, new InetSocketAddress("localhost", 8080)));
-					dataReciever.receive(dataRecieved);
-					currentData = dataRecieved.getData();
-				} //else {
-					//dataReciever.send(new DatagramPacket(new byte[] {MOVEWND}, 1, new InetSocketAddress("localhost", 8080)));	
-				//}
-			} else {
-				dataReciever.send(new DatagramPacket(new byte[] {GOOD}, 1, new InetSocketAddress("localhost", 8080)));
-				run = false;
-			}
+				int rand = new Random().nextInt(101);
+				if (rand <= datagramsToCurrupt) {
+					if (rand%2 == 0) {
+						dataReciever.send(new DatagramPacket(new byte[] {CORRUPT}, 1, new InetSocketAddress("localhost", 8080)));
+						dataReciever.receive(dataRecieved);
+						currentData = dataRecieved.getData();
+					}
+				} else {
+					dataReciever.send(new DatagramPacket(new byte[] {GOOD}, 1, new InetSocketAddress("localhost", 8080)));
+					run = false;
+				}
 			}
 			int startSize = size;
 			size += dataRecieved.getData().length -3;
@@ -151,32 +131,10 @@ class PacketReceiver {
 			System.out.println("[RECV]: Sequence number: " + currentData[0] +", Offset start: " + startSize + ", Offset end: " + size);
 			System.arraycopy(currentData, 2, writeData, 0, dataSize-2 );
 			stream.write(writeData);
-
-			//	Ouptut info for user...
-			
-//			System.arraycopy(currentData, 2, finalData, 0+(loopCounter*(dataSize-2)), (dataSize-2));
-			
-//			size++;
-
-			//	Send ACK Packet(s) back to Data Sender
-			
-//			int rand = new Random().nextInt(101);
-//			if (rand <= datagramsToCurrupt) {
-//				if (rand%2 == 0) {
-//					dataReciever.send(new DatagramPacket(new byte[] {CORRUPT}, 1, new InetSocketAddress("localhost", 8080)));
-//				} else {
-//					dataReciever.send(new DatagramPacket(new byte[] {MOVEWND}, 1, new InetSocketAddress("localhost", 8080)));	
-//				}
-//			} else {
-//				dataReciever.send(new DatagramPacket(new byte[] {GOOD}, 1, new InetSocketAddress("localhost", 8080)));
-//			}
-
-			//	Increment iterator no matter what
-//			loopCounter++;   
 		}
 
 		//	Write the data...
-//		stream.write(finalData);
+		//		stream.write(finalData);
 
 		//	Close streams so no data leaks...
 //		dataReciever.close();
