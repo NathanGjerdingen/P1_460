@@ -30,7 +30,8 @@ class PacketSender {
 	static final int CORRUPT = 1;
 	static final int MOVEWND = 2;
 	static final int DROP = 3;
-
+	static final int COMPLETE = 4;
+	
 	private static void setArgs(String[] args) throws UnknownHostException {
 
 		//	Test if we want to set...
@@ -163,7 +164,8 @@ class PacketSender {
 				dataSender.send(packet);
 			}
 		}
-
+		
+		dataSender.send(new DatagramPacket(new byte[] {7, COMPLETE}, 2));
 		dataSender.close();
 
 	}

@@ -31,6 +31,8 @@ class PacketReceiver {
 	static final int CORRUPT = 1;
 	static final int MOVEWND = 2;
 	static final int DROP = 3;
+	static final int COMPLETE = 4;
+
 
 	private static void setArgs(String[] args) throws UnknownHostException {
 
@@ -86,12 +88,17 @@ class PacketReceiver {
 		// 	AREA BELOW IS WHERE SHIT IS DONE					|
 		//														|
 		//-------------------------------------------------------
-
-		while (true) {
+		
+		boolean openToRecieve = true;
+		while (openToRecieve) {
 
 			//	When recieving data...
 			dataReciever.receive(dataRecieved);
 			currentData = dataRecieved.getData();
+			
+			if (currentData[1] == 7) {
+				break;
+			}
 
 			if (currentData[1] == CORRUPT) {
 				dataReciever.send(new DatagramPacket(new byte[] {CORRUPT}, 1, new InetSocketAddress("localhost", 8080)));
@@ -106,10 +113,6 @@ class PacketReceiver {
 				dataReciever.receive(dataRecieved);
 				currentData = dataRecieved.getData();
 			}
-
-
-
-			//	Set ALL the things...
 
 			boolean run= true;
 			while(run) {
@@ -133,11 +136,7 @@ class PacketReceiver {
 			stream.write(writeData);
 		}
 
-		//	Write the data...
-		//		stream.write(finalData);
-
-		//	Close streams so no data leaks...
-//		dataReciever.close();
-//		stream.close();
+		dataReciever.close();
+		stream.close();
 	}
 }
