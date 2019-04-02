@@ -37,7 +37,7 @@ class PacketSender {
 	static final int GOOD = 0;
 	static final int CORRUPT = 1;
 	static final int MOVEWND = 2;
-	static final int DROP = 1;
+	static final int DROP = 3;
 
 
 

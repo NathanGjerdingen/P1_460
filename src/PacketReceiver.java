@@ -37,6 +37,7 @@ class PacketReceiver {
 	static final int GOOD = 0;
 	static final int CORRUPT = 1;
 	static final int MOVEWND = 2;
+	static final int DROP = 3;
 
 	private static void setArgs(String[] args) throws UnknownHostException {
 
@@ -111,12 +112,18 @@ class PacketReceiver {
 			System.arraycopy(currentData, 2, writeData, 0, dataSize-2 );
 			stream.write(writeData);
 
-			if (currentData[1] == 1) {
+			if (currentData[1] == CORRUPT) {
 				dataReciever.send(new DatagramPacket(new byte[] {CORRUPT}, 1, new InetSocketAddress("localhost", 8080)));
 				System.out.println("[CRPT]: Sequence number: " + currentData[0] + " requesting resend");
 				dataReciever.receive(dataRecieved);
 				currentData = dataRecieved.getData();
-
+			}
+			
+			if (currentData[1] == DROP) {
+				dataReciever.send(new DatagramPacket(new byte[] {DROP}, 1, new InetSocketAddress("localhost", 8080)));
+				System.out.println("[DROP]: Sequence number: " + currentData[0] + " requesting resend");
+				dataReciever.receive(dataRecieved);
+				currentData = dataRecieved.getData();
 			}
 
 			//	Set ALL the things...
