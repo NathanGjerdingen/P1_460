@@ -164,7 +164,7 @@ class PacketSender {
 				dataSender.send(packet);
 			}
 		}
-		data[1]=7;
+		data[1]=COMPLETE;
 		DatagramPacket closePacket = new DatagramPacket(data, data.length, new InetSocketAddress("localhost", 8024));
 		dataSender.send(closePacket);
 		dataSender.close();

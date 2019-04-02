@@ -96,7 +96,7 @@ class PacketReceiver {
 			dataReciever.receive(dataRecieved);
 			currentData = dataRecieved.getData();
 			
-			if (currentData[1] == 7) {
+			if (currentData[1] == COMPLETE) {
 				break;
 			}
 
