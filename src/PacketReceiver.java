@@ -88,6 +88,7 @@ class PacketReceiver {
 		
 		// Final data size to contain data (data + leftoverData) 
 		byte[] finalData = new byte[(int) file.length()];
+		byte[] writeData = new byte[dataSize-2];
 		
 		//-------------------------------------------------------
 		//														|
@@ -107,7 +108,8 @@ class PacketReceiver {
 			
 			
 			currentData = dataRecieved.getData();
-			stream.write(currentData);
+			System.arraycopy(currentData, 2, writeData, 0, dataSize-2 );
+			stream.write(writeData);
 //			stream.write(Base64.getEncoder().encodeToString(currentData));
 
 			if (currentData[1] == 1) {
