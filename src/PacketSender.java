@@ -90,8 +90,8 @@ class PacketSender {
 		int k = 0;
 
 		// -------------------------------------------------------
-		// |
-		// AREA BELOW IS WHERE SHIT IS DONE |
+		// 														|
+		// AREA BELOW IS WHERE STUFF IS DONE |
 		// |
 		// -------------------------------------------------------
 
@@ -193,7 +193,7 @@ class PacketSender {
 								+ ((datagramSize - 3) + (datagramSize - 2) * k));
 						dataSender.receive(ackPacket);
 						ackData = ackPacket.getData();
-						// If we get a successful ack display messge
+						// If we get a successful ack display message
 						if (ackData[0] == 0) {
 							System.out.println("[AckRcvd]: " + (dataGramAccumulator - 1) + " MoveWnd");
 						}

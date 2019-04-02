@@ -1,15 +1,11 @@
 
-import java.io.File;
 import java.io.FileOutputStream;
-import java.io.PrintWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Random;
-
-import java.util.Base64;
 
 /**
  * Program will receive data packets from a Sender. It will deteermine if the
@@ -79,8 +75,6 @@ class PacketReceiver {
 		// Initial looping value and size...
 		int size = 0;
 
-		// Initialize Alice...
-		File file = new File("alice29.txt");
 
 		// Initialize Output...
 		// PrintWriter stream = new PrintWriter("../output.txt");
@@ -95,19 +89,17 @@ class PacketReceiver {
 		something = info.getData();
 		dataReciever.receive(info);
 		int dataSize = something[0];
-		int loopAmount = ((int) file.length() / dataSize);
 
 		// Initialize data sizes and Datagram Packets for storage
 		byte[] currentData = new byte[dataSize];
 		DatagramPacket dataRecieved = new DatagramPacket(currentData, currentData.length);
 
 		// Final data size to contain data (data + leftoverData)
-		byte[] finalData = new byte[(int) file.length()];
 		byte[] writeData = new byte[dataSize - 2];
 
 		// -------------------------------------------------------
 		// |
-		// AREA BELOW IS WHERE SHIT IS DONE |
+		// AREA BELOW IS WHERE STUFF IS DONE |
 		// |
 		// -------------------------------------------------------
 
