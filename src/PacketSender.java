@@ -114,11 +114,12 @@ class PacketSender {
 			
 			DatagramPacket packet = new DatagramPacket(data, data.length, new InetSocketAddress("localhost", 8024));
 
-			
 			if (j%(datagramSize-1) == 0) {
 				
-				if (new Random().nextInt(101) <= datagramsToCurrupt) {
-					if (new Random().nextInt(101) <= datagramsToCurrupt) {
+				int rand = new Random().nextInt(101);
+				
+				if (rand <= datagramsToCurrupt) {
+					if (rand%2 == 0) {
 						data[1] = CORRUPT;
 						packet.setData(data);
 						dataSender.send(packet);

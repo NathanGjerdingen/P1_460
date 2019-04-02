@@ -144,15 +144,17 @@ class PacketReceiver {
 //			size++;
 
 			//	Send ACK Packet(s) back to Data Sender
-//			if (new Random().nextInt(101) <= datagramsToCurrupt) {
-//				if (new Random().nextInt(101) <= datagramsToCurrupt) {
-//					dataReciever.send(new DatagramPacket(new byte[] {CORRUPT}, 1, new InetSocketAddress("localhost", 8080)));
-//				} else {
-//					dataReciever.send(new DatagramPacket(new byte[] {MOVEWND}, 1, new InetSocketAddress("localhost", 8080)));	
-//				}
-//			} else {
-//				dataReciever.send(new DatagramPacket(new byte[] {GOOD}, 1, new InetSocketAddress("localhost", 8080)));
-//			}
+			
+			int rand = new Random().nextInt(101);
+			if (rand <= datagramsToCurrupt) {
+				if (rand%2 == 0) {
+					dataReciever.send(new DatagramPacket(new byte[] {CORRUPT}, 1, new InetSocketAddress("localhost", 8080)));
+				} else {
+					dataReciever.send(new DatagramPacket(new byte[] {MOVEWND}, 1, new InetSocketAddress("localhost", 8080)));	
+				}
+			} else {
+				dataReciever.send(new DatagramPacket(new byte[] {GOOD}, 1, new InetSocketAddress("localhost", 8080)));
+			}
 
 			//	Increment iterator no matter what
 //			loopCounter++;   
