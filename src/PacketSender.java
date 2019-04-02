@@ -42,7 +42,7 @@ class PacketSender {
 			//	Set static variable from args...
 			datagramSize = Integer.parseInt(args[1]);
 			datagramTimeout = Integer.parseInt(args[3]); 
-			datagramsToCurrupt = (int) (Double.parseDouble(args[5])*16);
+			datagramsToCurrupt = (int) (Double.parseDouble(args[1]) * 100);
 			receiver_ip_addr = InetAddress.getByName(args[6]);
 			receiver_port = Integer.parseInt(args[7]);
 		}
@@ -61,7 +61,7 @@ class PacketSender {
 		byte[] data = new byte[datagramSize];
 
 		//	Initialize file to send...
-		File file = new File("../alice29.txt");
+		File file = new File("alice29.txt");
 		byte[] fileData = Files.readAllBytes(file.toPath());
 
 		//	leftoverData is just the last unsized part of the sender...
@@ -106,8 +106,6 @@ class PacketSender {
 			
 			if (j%(datagramSize-1) == 0) {
 				
-				
-				//	Here is send GOOD data
 				dataSender.send(packet);
 
 				System.out.println( "[SENDing]: Sequence number: " + data[0] + ", " +
@@ -125,37 +123,35 @@ class PacketSender {
 				//														|
 				//-------------------------------------------------------
 				
-//				byte[] ackData = new byte[1];
-//				DatagramPacket ackPacket = new DatagramPacket(new byte[1], 1);
-//				dataSender.receive(ackPacket);
-//				ackData = ackPacket.getData();
+				byte[] ackData = new byte[1];
+				DatagramPacket ackPacket = new DatagramPacket(new byte[1], 1);
+				dataSender.receive(ackPacket);
+				ackData = ackPacket.getData();
 				
-//				if (ackData[0] == 0) {
-//					System.out.println("[AckRcvd]: " + (dataGramAccumulator-1));
-//				} else if (ackData[0] == 1) {
-//					System.out.println("[ErrAck]: " + (dataGramAccumulator-1));
-//					data[1] = 0;
-//					packet.setData(data);
-//					dataSender.send(packet);
-//					System.out.println( "[RESENDing]: Sequence number: " + data[0] + ", " +
-//							"Offset start: " + (0+(datagramSize-2)*k) + ", " +
-//							"Offset end: " + ((datagramSize-3)+(datagramSize-2)*k));
-//					dataSender.receive(ackPacket);
-//					ackData = ackPacket.getData();
-//					if (ackData[0] == 0) {
-//						System.out.println("[AckRcvd]: " + (dataGramAccumulator-1));
-//					}
-//					
-//				} else {
-//					System.out.println("[MoveWnd]: " + (dataGramAccumulator-1));
-//				}
+				if (ackData[0] == 0) {
+					System.out.println("[AckRcvd]: " + (dataGramAccumulator-1));
+				} else if (ackData[0] == 1) {
+					System.out.println("[ErrAck]: " + (dataGramAccumulator-1));
+					data[1] = 0;
+					packet.setData(data);
+					dataSender.send(packet);
+					System.out.println( "[RESENDing]: Sequence number: " + data[0] + ", " +
+							"Offset start: " + (0+(datagramSize-2)*k) + ", " +
+							"Offset end: " + ((datagramSize-3)+(datagramSize-2)*k));
+					dataSender.receive(ackPacket);
+					ackData = ackPacket.getData();
+					if (ackData[0] == 0) {
+						System.out.println("[AckRcvd]: " + (dataGramAccumulator-1));
+					}
+				} else {
+					System.out.println("[MoveWnd]: " + (dataGramAccumulator-1));
+				}
 				
 
 				
 			}
 			
 			if (i == file.length()-1) {
-				System.out.println("what the fucking fuck");
 				dataSender.send(packet);
 			}
 			
