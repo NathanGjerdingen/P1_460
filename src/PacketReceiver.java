@@ -109,8 +109,7 @@ class PacketReceiver {
 			
 			
 			currentData = dataRecieved.getData();
-			System.arraycopy(currentData, 2, writeData, 0, dataSize-2 );
-			stream.write(writeData);
+			
 
 			if (currentData[1] == CORRUPT) {
 				dataReciever.send(new DatagramPacket(new byte[] {CORRUPT}, 1, new InetSocketAddress("localhost", 8080)));
@@ -135,6 +134,8 @@ class PacketReceiver {
 
 			dataReciever.send(new DatagramPacket(new byte[] {GOOD}, 1, new InetSocketAddress("localhost", 8080)));
 			System.out.println("[RECV]: Sequence number: " + currentData[0] +", Offset start: " + startSize + ", Offset end: " + size);
+			System.arraycopy(currentData, 2, writeData, 0, dataSize-2 );
+			stream.write(writeData);
 
 			//	Ouptut info for user...
 			
@@ -143,15 +144,15 @@ class PacketReceiver {
 //			size++;
 
 			//	Send ACK Packet(s) back to Data Sender
-			if (new Random().nextInt(101) <= datagramsToCurrupt) {
-				if (new Random().nextInt(101) <= datagramsToCurrupt) {
-					dataReciever.send(new DatagramPacket(new byte[] {CORRUPT}, 1, new InetSocketAddress("localhost", 8080)));
-				} else {
-					dataReciever.send(new DatagramPacket(new byte[] {MOVEWND}, 1, new InetSocketAddress("localhost", 8080)));	
-				}
-			} else {
-				dataReciever.send(new DatagramPacket(new byte[] {GOOD}, 1, new InetSocketAddress("localhost", 8080)));
-			}
+//			if (new Random().nextInt(101) <= datagramsToCurrupt) {
+//				if (new Random().nextInt(101) <= datagramsToCurrupt) {
+//					dataReciever.send(new DatagramPacket(new byte[] {CORRUPT}, 1, new InetSocketAddress("localhost", 8080)));
+//				} else {
+//					dataReciever.send(new DatagramPacket(new byte[] {MOVEWND}, 1, new InetSocketAddress("localhost", 8080)));	
+//				}
+//			} else {
+//				dataReciever.send(new DatagramPacket(new byte[] {GOOD}, 1, new InetSocketAddress("localhost", 8080)));
+//			}
 
 			//	Increment iterator no matter what
 //			loopCounter++;   
