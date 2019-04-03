@@ -92,8 +92,10 @@ class PacketReceiver {
 		// Recieve sizing flags...
 		byte[] something = new byte[1];
 		DatagramPacket info = new DatagramPacket(something, something.length);
+		long timestamp;
 		something = info.getData();
 		dataReciever.receive(info);
+		timestamp = System.currentTimeMillis();
 		int dataSize = something[0];
 		int loopAmount = ((int) file.length() / dataSize);
 
@@ -107,7 +109,7 @@ class PacketReceiver {
 
 		// -------------------------------------------------------
 		// |
-		// AREA BELOW IS WHERE SHIT IS DONE |
+		// AREA BELOW IS WHERE STUFF IS DONE |
 		// |
 		// -------------------------------------------------------
 
@@ -158,8 +160,7 @@ class PacketReceiver {
 						currentData = dataRecieved.getData();
 					}
 				} else {
-					dataReciever
-							.send(new DatagramPacket(new byte[] { GOOD }, 1, new InetSocketAddress("localhost", 8080)));
+					dataReciever.send(new DatagramPacket(new byte[] { GOOD }, 1, new InetSocketAddress("localhost", 8080)));
 					run = false;
 				}
 			}
@@ -169,7 +170,7 @@ class PacketReceiver {
 			size += dataRecieved.getData().length - 3;
 			size++;
 			System.out.println("[RECV]: Sequence number: " + currentData[0] + ", Offset start: " + startSize
-					+ ", Offset end: " + size);
+					+ ", Offset end: " + size + ", Timestamp: " + timestamp);
 			// Getting a copy of the data that was received and writing it to the output
 			// file.
 			System.arraycopy(currentData, 2, writeData, 0, dataSize - 2);

@@ -8,6 +8,8 @@ import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.util.Random;
 
+import com.sun.jmx.snmp.Timestamp;
+
 /**
  * Program will read a file and put the data in a byte array. Data will then be
  * sent to the receiver according the specified datagram size. It will then wait
@@ -91,7 +93,7 @@ class PacketSender {
 
 		// -------------------------------------------------------
 		// |
-		// AREA BELOW IS WHERE SHIT IS DONE |
+		// AREA BELOW IS WHERE STUFF IS DONE |
 		// |
 		// -------------------------------------------------------
 
@@ -115,27 +117,33 @@ class PacketSender {
 				// Randomizing if the packet will corrupt or if it will be dropped or if its a
 				// good packet.
 				int rand = new Random().nextInt(101);
+				
+				long timestamp;
 
 				if (rand <= datagramsToCurrupt) {
 					if (rand % 2 == 0) {
 						data[1] = CORRUPT;
 						packet.setData(data);
+						timestamp = System.currentTimeMillis();
 						dataSender.send(packet);
 					} else {
 						data[1] = DROP;
 						packet.setData(data);
+						timestamp = System.currentTimeMillis();
 						dataSender.send(packet);
 					}
 				} else {
 					data[1] = GOOD;
 					packet.setData(data);
+					timestamp = System.currentTimeMillis();
 					dataSender.send(packet);
 				}
 
 				// Displaying the information of the packets sent.
 				System.out.println("[SENDing]: Sequence number: " + data[0] + ", " + "Offset start: "
 						+ (0 + (datagramSize - 2) * k) + ", " + "Offset end: "
-						+ ((datagramSize - 3) + (datagramSize - 2) * k));
+						+ ((datagramSize - 3) + (datagramSize - 2) * k) + ", " 
+						+ "Timestamp" + timestamp);
 
 				// Increment ALL the things
 				k++;
@@ -175,7 +183,8 @@ class PacketSender {
 						dataSender.send(packet);
 						System.out.println("[RESENDing]: Sequence number: " + data[0] + ", " + "Offset start: "
 								+ (0 + (datagramSize - 2) * k) + ", " + "Offset end: "
-								+ ((datagramSize - 3) + (datagramSize - 2) * k));
+								+ ((datagramSize - 3) + (datagramSize - 2) * k) + ", " 
+								+ "Timestamp" + timestamp);
 						dataSender.receive(ackPacket);
 						ackData = ackPacket.getData();
 						// If we get a successful ack display messge
@@ -190,7 +199,8 @@ class PacketSender {
 						dataSender.send(packet);
 						System.out.println("[RESENDing]: Sequence number: " + data[0] + ", " + "Offset start: "
 								+ (0 + (datagramSize - 2) * k) + ", " + "Offset end: "
-								+ ((datagramSize - 3) + (datagramSize - 2) * k));
+								+ ((datagramSize - 3) + (datagramSize - 2) * k) + ", " 
+								+ "Timestamp" + timestamp);
 						dataSender.receive(ackPacket);
 						ackData = ackPacket.getData();
 						// If we get a successful ack display messge
