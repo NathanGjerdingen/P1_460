@@ -129,6 +129,7 @@ class PacketSender {
 						data[1] = DROP;
 						packet.setData(data);
 						timestamp = System.currentTimeMillis();
+						TimeUnit.MILLISECONDS.sleep(datagramTimeout);
 						dataSender.send(packet);
 					}
 				} else {
@@ -173,8 +174,8 @@ class PacketSender {
 				// on.
 				while (ackData[0] != 0) {
 					
-					System.out.print("[Timeout]: #" + data[0]);
-					TimeUnit.MILLISECONDS.sleep(datagramTimeout);
+					//System.out.print("[Timeout]: #" + data[0]);
+					//TimeUnit.MILLISECONDS.sleep(datagramTimeout);
 					
 					// Handle if we get a corrupt packet error.
 					if (ackData[0] == CORRUPT) {

@@ -8,7 +8,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.util.Random;
-
+import java.util.concurrent.TimeUnit;
 import java.util.Base64;
 
 /**
@@ -141,8 +141,10 @@ class PacketReceiver {
 			// Sender so it will try again. Display a message indicating that a packet was
 			// dropped.
 			if (currentData[1] == DROP) {
+				
+				TimeUnit.MILLISECONDS.sleep(1000);
+				//System.out.println("[DROP]: #" + currentData[0] + ", requesting resend...");
 				dataReciever.send(new DatagramPacket(new byte[] { DROP }, 1, new InetSocketAddress("localhost", 8080)));
-//				System.out.println("[DROP]: #" + currentData[0] + ", requesting resend...");
 				dataReciever.receive(dataRecieved);
 				currentData = dataRecieved.getData();
 			}
