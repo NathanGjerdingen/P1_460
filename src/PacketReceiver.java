@@ -87,7 +87,7 @@ class PacketReceiver {
 		FileOutputStream stream = new FileOutputStream("output.txt");
 
 		// Starting output...
-		System.out.println("Awaiting data...");
+		System.out.println("Action:\t" + "Seq#:\t" + "Offset:\t\t" + "Time:\t\t\t" + "Result:");
 
 		// Recieve sizing flags...
 		byte[] something = new byte[1];
@@ -142,7 +142,6 @@ class PacketReceiver {
 			// dropped.
 			if (currentData[1] == DROP) {
 				
-				
 				//System.out.println("[DROP]: #" + currentData[0] + ", requesting resend...");
 				dataReciever.send(new DatagramPacket(new byte[] { DROP }, 1, new InetSocketAddress("localhost", 8080)));
 				dataReciever.receive(dataRecieved);
@@ -170,8 +169,7 @@ class PacketReceiver {
 			// offset send.
 			int startSize = size;
 			size += dataRecieved.getData().length - 3;
-			System.out.println("[RECV]: #" + currentData[0] + ", " + startSize + ":" + size + " @ " + timestamp);
-			System.out.println("[ACK ]: #" + currentData[0]);
+			System.out.println("RECV\t" + currentData[0] + "\t" + startSize + ":" + size + "\t\t" + timestamp + "\t\tACK");
 			size++;
 			// Getting a copy of the data that was received and writing it to the output
 			// file.
