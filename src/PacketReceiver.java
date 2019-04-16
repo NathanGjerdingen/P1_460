@@ -132,7 +132,7 @@ class PacketReceiver {
 			// a corrupt packet.
 			if (currentData[1] == CORRUPT) {
 				dataReciever.send(new DatagramPacket(new byte[] { CORRUPT }, 1, new InetSocketAddress("localhost", 8080)));
-				System.out.println("[CRPT]: #" + currentData[0] + ", requesting resend...");
+//				System.out.println("[CRPT]: #" + currentData[0] + ", requesting resend...");
 				dataReciever.receive(dataRecieved);
 				currentData = dataRecieved.getData();
 			}
@@ -142,7 +142,7 @@ class PacketReceiver {
 			// dropped.
 			if (currentData[1] == DROP) {
 				dataReciever.send(new DatagramPacket(new byte[] { DROP }, 1, new InetSocketAddress("localhost", 8080)));
-				System.out.println("[DROP]: #" + currentData[0] + ", requesting resend...");
+//				System.out.println("[DROP]: #" + currentData[0] + ", requesting resend...");
 				dataReciever.receive(dataRecieved);
 				currentData = dataRecieved.getData();
 			}
@@ -168,8 +168,8 @@ class PacketReceiver {
 			int startSize = size;
 			size += dataRecieved.getData().length - 3;
 			size++;
-			System.out.println("[RECV]: #" + currentData[0] + ", " + startSize
-					+ ":" + size + " @ " + timestamp);
+			System.out.println("[RECV]: #" + currentData[0] + ", " + startSize + ":" + size + " @ " + timestamp);
+			System.out.println("[ACK ]: #" + currentData[0]);
 			// Getting a copy of the data that was received and writing it to the output
 			// file.
 			System.arraycopy(currentData, 2, writeData, 0, dataSize - 2);

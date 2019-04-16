@@ -7,6 +7,7 @@ import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import com.sun.jmx.snmp.Timestamp;
 
@@ -171,9 +172,13 @@ class PacketSender {
 				// Once we finally get a successful packet we will display the success and move
 				// on.
 				while (ackData[0] != 0) {
+					
+					System.out.print("[Timeout]: #" + data[0]);
+					TimeUnit.MILLISECONDS.sleep(datagramTimeout);
+					
 					// Handle if we get a corrupt packet error.
 					if (ackData[0] == CORRUPT) {
-						System.out.println("[ERRACK]: #" + (dataGramAccumulator - 1) + ", answering resend request...");
+						System.out.println(" [CORRUPT]");
 						data[1] = 0;
 						packet.setData(data);
 						dataSender.send(packet);
@@ -187,7 +192,7 @@ class PacketSender {
 						}
 						// Handle if we get dropped packet error
 					} else if (ackData[0] == DROP) {
-						System.out.println("[ERRACK]: #" + (dataGramAccumulator - 1) + ", answering resend request...");
+						System.out.println(" [DROP]");
 						data[1] = 0;
 						packet.setData(data);
 						dataSender.send(packet);
