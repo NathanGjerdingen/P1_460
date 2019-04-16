@@ -22,7 +22,7 @@ import java.util.Base64;
 class PacketReceiver {
 
 	// HOW TO RUN PROGRAM EXAMPLE:
-	// java PacketReceiver -d 0.5 127.0.0.1 8024
+	// java PacketReceiver -d 0.2 127.0.0.1 8024
 
 	// Initialize static variables with default vals...
 	static int datagramsToCurrupt = 0;
@@ -132,7 +132,7 @@ class PacketReceiver {
 			if (currentData[1] == CORRUPT) {
 				dataReciever
 						.send(new DatagramPacket(new byte[] { CORRUPT }, 1, new InetSocketAddress("localhost", 8080)));
-				System.out.println("[CRPT]: Sequence number: " + currentData[0] + " requesting resend");
+				System.out.println("[CRPT]: #" + currentData[0] + ", requesting resend...");
 				dataReciever.receive(dataRecieved);
 				currentData = dataRecieved.getData();
 			}
@@ -142,7 +142,7 @@ class PacketReceiver {
 			// dropped.
 			if (currentData[1] == DROP) {
 				dataReciever.send(new DatagramPacket(new byte[] { DROP }, 1, new InetSocketAddress("localhost", 8080)));
-				System.out.println("[TO]: Sequence number: " + currentData[0] + " requesting resend");
+				System.out.println("[DROP]: #" + currentData[0] + ", requesting resend...");
 				dataReciever.receive(dataRecieved);
 				currentData = dataRecieved.getData();
 			}
@@ -151,7 +151,7 @@ class PacketReceiver {
 			// sent. Once a good packet is received then it will break from the while.
 			boolean run = true;
 			while (run) {
-				int rand = new Random().nextInt(101);
+				int rand = new Random().nextInt(100);
 				if (rand <= datagramsToCurrupt) {
 					if (rand % 2 == 0) {
 						dataReciever.send(new DatagramPacket(new byte[] { CORRUPT }, 1,
@@ -169,8 +169,8 @@ class PacketReceiver {
 			int startSize = size;
 			size += dataRecieved.getData().length - 3;
 			size++;
-			System.out.println("[RECV]: Sequence number: " + currentData[0] + ", Offset start: " + startSize
-					+ ", Offset end: " + size + ", Timestamp: " + timestamp);
+			System.out.println("[RECV]: #" + currentData[0] + ", " + startSize
+					+ ":" + size + " @ " + timestamp);
 			// Getting a copy of the data that was received and writing it to the output
 			// file.
 			System.arraycopy(currentData, 2, writeData, 0, dataSize - 2);

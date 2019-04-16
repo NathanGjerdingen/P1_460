@@ -23,7 +23,7 @@ import com.sun.jmx.snmp.Timestamp;
 class PacketSender {
 
 	// HOW TO RUN PROGRAM EXAMPLE:
-	// java PacketSender -s 100 -t 30000 -d 0.25 127.0.0.1 8024
+	// java PacketSender -s 100 -t 30000 -d 0.1 127.0.0.1 8024
 
 	// Initialize static variables with default vals...
 	static int datagramSize = 10000;
@@ -98,10 +98,8 @@ class PacketSender {
 		// -------------------------------------------------------
 
 		// Send Receiver info.
-		dataSender.send(
-				new DatagramPacket(new byte[] { (byte) datagramSize }, 1, new InetSocketAddress("localhost", 8024)));
+		dataSender.send(new DatagramPacket(new byte[] { (byte) datagramSize }, 1, new InetSocketAddress("localhost", 8024)));
 
-		System.out.println(datagramsToCurrupt);
 		for (int i = 1; i < fileData.length; i++, j++) {
 
 			// Give accumulator what's currently in dataGramAccumulator @ pos i...
@@ -116,7 +114,7 @@ class PacketSender {
 
 				// Randomizing if the packet will corrupt or if it will be dropped or if its a
 				// good packet.
-				int rand = new Random().nextInt(101);
+				int rand = new Random().nextInt(100);
 				
 				long timestamp;
 
@@ -140,10 +138,8 @@ class PacketSender {
 				}
 
 				// Displaying the information of the packets sent.
-				System.out.println("[SENDing]: Sequence number: " + data[0] + ", " + "Offset start: "
-						+ (0 + (datagramSize - 2) * k) + ", " + "Offset end: "
-						+ ((datagramSize - 3) + (datagramSize - 2) * k) + ", " 
-						+ "Timestamp" + timestamp);
+				System.out.println("[ SEND ]: #" + data[0] + ", " + (0 + (datagramSize - 2) * k) + 
+						":" + ((datagramSize - 3) + (datagramSize - 2) * k) + " @ " + timestamp);
 
 				// Increment ALL the things
 				k++;
@@ -166,7 +162,7 @@ class PacketSender {
 
 				// If its a good packet, displays that successful ack was received.
 				if (ackData[0] == 0) {
-					System.out.println("[AckRcvd]: " + (dataGramAccumulator - 1) + " MoveWnd");
+					System.out.println("[AckRcvd]: " + (dataGramAccumulator - 1) + ", Moving Window...");
 				}
 
 				// While we're not getting a successful ack, we will sit in this loop then we
@@ -177,35 +173,31 @@ class PacketSender {
 				while (ackData[0] != 0) {
 					// Handle if we get a corrupt packet error.
 					if (ackData[0] == CORRUPT) {
-						System.out.println("[ErrAck]: " + (dataGramAccumulator - 1));
+						System.out.println("[ERRACK]: #" + (dataGramAccumulator - 1) + ", answering resend request...");
 						data[1] = 0;
 						packet.setData(data);
 						dataSender.send(packet);
-						System.out.println("[RESENDing]: Sequence number: " + data[0] + ", " + "Offset start: "
-								+ (0 + (datagramSize - 2) * k) + ", " + "Offset end: "
-								+ ((datagramSize - 3) + (datagramSize - 2) * k) + ", " 
-								+ "Timestamp" + timestamp);
+						System.out.println("[RESEND]: #" + data[0] + ", " + (0 + (datagramSize - 2) * k) + 
+								":" + ((datagramSize - 3) + (datagramSize - 2) * k) + " @ " + timestamp);
 						dataSender.receive(ackPacket);
 						ackData = ackPacket.getData();
 						// If we get a successful ack display messge
 						if (ackData[0] == 0) {
-							System.out.println("[AckRcvd]: " + (dataGramAccumulator - 1) + " MoveWnd");
+							System.out.println("[ACKRCV]: #" + (dataGramAccumulator - 1) + ", Moving Window...");
 						}
 						// Handle if we get dropped packet error
 					} else if (ackData[0] == DROP) {
-						System.out.println("[ErrAck]: " + (dataGramAccumulator - 1));
+						System.out.println("[ERRACK]: #" + (dataGramAccumulator - 1) + ", answering resend request...");
 						data[1] = 0;
 						packet.setData(data);
 						dataSender.send(packet);
-						System.out.println("[RESENDing]: Sequence number: " + data[0] + ", " + "Offset start: "
-								+ (0 + (datagramSize - 2) * k) + ", " + "Offset end: "
-								+ ((datagramSize - 3) + (datagramSize - 2) * k) + ", " 
-								+ "Timestamp" + timestamp);
+						System.out.println("[RESEND]: #" + data[0] + ", " + (0 + (datagramSize - 2) * k) + 
+								":" + ((datagramSize - 3) + (datagramSize - 2) * k) + " @ " + timestamp);
 						dataSender.receive(ackPacket);
 						ackData = ackPacket.getData();
 						// If we get a successful ack display messge
 						if (ackData[0] == 0) {
-							System.out.println("[AckRcvd]: " + (dataGramAccumulator - 1) + " MoveWnd");
+							System.out.println("[ACKRCV]: #" + (dataGramAccumulator - 1) + ", Moving Window...");
 						}
 					}
 				}
