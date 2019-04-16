@@ -109,14 +109,14 @@ class PacketSender {
 			// Creating a packet to send to the Receiver.
 			DatagramPacket packet = new DatagramPacket(data, data.length, new InetSocketAddress("localhost", 8024));
 
+			long timestamp = 0;
+			
 			// Checks if location of buffer has reached the size limit.
 			if (j % (datagramSize - 1) == 0) {
 
 				// Randomizing if the packet will corrupt or if it will be dropped or if its a
 				// good packet.
 				int rand = new Random().nextInt(100);
-
-				long timestamp;
 
 				if (rand <= datagramsToCorrupt) {
 					if (rand % 2 == 0) {

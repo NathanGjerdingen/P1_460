@@ -92,10 +92,9 @@ class PacketReceiver {
 		// Recieve sizing flags...
 		byte[] something = new byte[1];
 		DatagramPacket info = new DatagramPacket(something, something.length);
-		long timestamp;
+		long timestamp = 0;
 		something = info.getData();
 		dataReciever.receive(info);
-		timestamp = System.currentTimeMillis();
 		int dataSize = something[0];
 		int loopAmount = ((int) file.length() / dataSize);
 
@@ -125,6 +124,8 @@ class PacketReceiver {
 			if (currentData[1] == COMPLETE) {
 				break;
 			}
+			
+			timestamp = System.currentTimeMillis();
 
 			// If the packet contains a corrupt flag then send appropriate ack to the
 			// Sender so that it will try again. Display a message indicating that we got
