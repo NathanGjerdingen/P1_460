@@ -25,7 +25,7 @@ class PacketReceiver {
 	// java PacketReceiver -d 0.2 127.0.0.1 8024
 
 	// Initialize static variables with default vals...
-	static int datagramsToCurrupt = 0;
+	static int datagramsToCorrupt = 0;
 	static InetAddress receiver_ip_addr;
 	static int receiver_port = 8024;
 
@@ -50,7 +50,7 @@ class PacketReceiver {
 		if (args.length > 3 && args[0].endsWith("d")) {
 
 			// Set static variable from args...
-			datagramsToCurrupt = (int) (Double.parseDouble(args[1]) * 100);
+			datagramsToCorrupt = (int) (Double.parseDouble(args[1]) * 100);
 			receiver_ip_addr = InetAddress.getByName(args[2]);
 			receiver_port = Integer.parseInt(args[3]);
 		}
@@ -130,8 +130,7 @@ class PacketReceiver {
 			// Sender so that it will try again. Display a message indicating that we got
 			// a corrupt packet.
 			if (currentData[1] == CORRUPT) {
-				dataReciever
-						.send(new DatagramPacket(new byte[] { CORRUPT }, 1, new InetSocketAddress("localhost", 8080)));
+				dataReciever.send(new DatagramPacket(new byte[] { CORRUPT }, 1, new InetSocketAddress("localhost", 8080)));
 				System.out.println("[CRPT]: #" + currentData[0] + ", requesting resend...");
 				dataReciever.receive(dataRecieved);
 				currentData = dataRecieved.getData();
@@ -152,10 +151,9 @@ class PacketReceiver {
 			boolean run = true;
 			while (run) {
 				int rand = new Random().nextInt(100);
-				if (rand <= datagramsToCurrupt) {
+				if (rand <= datagramsToCorrupt) {
 					if (rand % 2 == 0) {
-						dataReciever.send(new DatagramPacket(new byte[] { CORRUPT }, 1,
-								new InetSocketAddress("localhost", 8080)));
+						dataReciever.send(new DatagramPacket(new byte[] { CORRUPT }, 1, new InetSocketAddress("localhost", 8080)));
 						dataReciever.receive(dataRecieved);
 						currentData = dataRecieved.getData();
 					}

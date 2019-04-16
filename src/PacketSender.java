@@ -28,7 +28,7 @@ class PacketSender {
 	// Initialize static variables with default vals...
 	static int datagramSize = 10000;
 	static int datagramTimeout = 0;
-	static int datagramsToCurrupt = 0;
+	static int datagramsToCorrupt = 0;
 	static InetAddress receiver_ip_addr;
 	static int receiver_port = 8024;
 
@@ -55,7 +55,7 @@ class PacketSender {
 			// Set static variable from args...
 			datagramSize = Integer.parseInt(args[1]);
 			datagramTimeout = Integer.parseInt(args[3]);
-			datagramsToCurrupt = (int) (Double.parseDouble(args[1]) * 100);
+			datagramsToCorrupt = (int) (Double.parseDouble(args[5]) * 100);
 			receiver_ip_addr = InetAddress.getByName(args[6]);
 			receiver_port = Integer.parseInt(args[7]);
 		}
@@ -115,10 +115,10 @@ class PacketSender {
 				// Randomizing if the packet will corrupt or if it will be dropped or if its a
 				// good packet.
 				int rand = new Random().nextInt(100);
-				
+
 				long timestamp;
 
-				if (rand <= datagramsToCurrupt) {
+				if (rand <= datagramsToCorrupt) {
 					if (rand % 2 == 0) {
 						data[1] = CORRUPT;
 						packet.setData(data);
@@ -162,7 +162,7 @@ class PacketSender {
 
 				// If its a good packet, displays that successful ack was received.
 				if (ackData[0] == 0) {
-					System.out.println("[AckRcvd]: " + (dataGramAccumulator - 1) + ", Moving Window...");
+					System.out.println("[ACKRCV]: #" + (dataGramAccumulator - 1) + ", Moving Window...");
 				}
 
 				// While we're not getting a successful ack, we will sit in this loop then we
@@ -215,6 +215,5 @@ class PacketSender {
 
 		// Closing the sender.
 		dataSender.close();
-
 	}
 }
