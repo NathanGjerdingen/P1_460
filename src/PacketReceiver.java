@@ -142,11 +142,12 @@ class PacketReceiver {
 			// dropped.
 			if (currentData[1] == DROP) {
 				
-				TimeUnit.MILLISECONDS.sleep(1000);
+				
 				//System.out.println("[DROP]: #" + currentData[0] + ", requesting resend...");
 				dataReciever.send(new DatagramPacket(new byte[] { DROP }, 1, new InetSocketAddress("localhost", 8080)));
 				dataReciever.receive(dataRecieved);
 				currentData = dataRecieved.getData();
+				timestamp = System.currentTimeMillis();
 			}
 
 			// Randomizing corrupt packets. While will only run if corrupt packets are being

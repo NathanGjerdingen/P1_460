@@ -197,6 +197,7 @@ class PacketSender {
 						data[1] = 0;
 						packet.setData(data);
 						dataSender.send(packet);
+						timestamp = System.currentTimeMillis();
 						System.out.println("[RESEND]: #" + data[0] + ", " + (0 + (datagramSize - 2) * k) + 
 								":" + ((datagramSize - 3) + (datagramSize - 2) * k) + " @ " + timestamp);
 						dataSender.receive(ackPacket);
