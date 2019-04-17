@@ -133,6 +133,7 @@ class PacketReceiver {
 			if (currentData[1] == CORRUPT) {
 				dataReciever.send(new DatagramPacket(new byte[] { CORRUPT }, 1, new InetSocketAddress("localhost", 8080)));
 			//	System.out.println("[CRPT]: #" + currentData[0] + ", requesting resend...");
+				System.out.println("ACKSent: " + currentData[0] + " \t" + timestamp + "\tERR");
 				dataReciever.receive(dataRecieved);
 				currentData = dataRecieved.getData();
 			}
@@ -144,6 +145,7 @@ class PacketReceiver {
 				
 			//	System.out.println("[DROP]: #" + currentData[0] + ", requesting resend...");
 				dataReciever.send(new DatagramPacket(new byte[] { DROP }, 1, new InetSocketAddress("localhost", 8080)));
+			//	System.out.println("ACKSent: " + currentData[0] + " \t" + timestamp + "\tDROP");
 				dataReciever.receive(dataRecieved);
 				currentData = dataRecieved.getData();
 				timestamp = System.currentTimeMillis();
@@ -159,6 +161,7 @@ class PacketReceiver {
 						dataReciever.send(new DatagramPacket(new byte[] { CORRUPT }, 1, new InetSocketAddress("localhost", 8080)));
 						dataReciever.receive(dataRecieved);
 						currentData = dataRecieved.getData();
+						System.out.println("ACKSent: " + currentData[0] + " \t" + timestamp + "\tERR");
 					}
 				} else {
 					dataReciever.send(new DatagramPacket(new byte[] { GOOD }, 1, new InetSocketAddress("localhost", 8080)));

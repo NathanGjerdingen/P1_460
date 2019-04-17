@@ -126,12 +126,23 @@ class PacketSender {
 						data[1] = CORRUPT;
 						packet.setData(data);
 						timestamp = System.currentTimeMillis();
+						System.out.println("SENDing: " + data[0] + "  " + (0 + (datagramSize - 2) * k) + 
+								":" + ((datagramSize - 3) + (datagramSize - 2) * k) + "  " + timestamp + "  ERR");
+						System.out.println("Timeout: " + data[0]);
+						TimeUnit.MILLISECONDS.sleep(datagramTimeout);
+						System.out.println("RESEND:  " + data[0] + "  " + (0 + (datagramSize - 2) * k) + 
+								":" + ((datagramSize - 3) + (datagramSize - 2) * k) + "  " + timestamp + "  SENT");
 						dataSender.send(packet);
 					} else {
 						data[1] = DROP;
 						packet.setData(data);
 						timestamp = System.currentTimeMillis();
+						System.out.println("SENDing: " + data[0] + "  " + (0 + (datagramSize - 2) * k) + 
+								":" + ((datagramSize - 3) + (datagramSize - 2) * k) + "  " + timestamp + "  DROP");
+						System.out.println("Timeout: " + data[0]);
 						TimeUnit.MILLISECONDS.sleep(datagramTimeout);
+						System.out.println("RESEND:  " + data[0] + "  " + (0 + (datagramSize - 2) * k) + 
+								":" + ((datagramSize - 3) + (datagramSize - 2) * k) + "  " + timestamp + "  SENT");
 						dataSender.send(packet);
 					}
 				} else {
@@ -139,11 +150,14 @@ class PacketSender {
 					packet.setData(data);
 					timestamp = System.currentTimeMillis();
 					dataSender.send(packet);
+					System.out.println("SENDing: " + data[0] + "  " + (0 + (datagramSize - 2) * k) + 
+							":" + ((datagramSize - 3) + (datagramSize - 2) * k) + "  " + timestamp + "  SENT");
+
 				}
 
 				// Displaying the information of the packets sent.
-				System.out.print("SENDing: " + data[0] + "  " + (0 + (datagramSize - 2) * k) + 
-						":" + ((datagramSize - 3) + (datagramSize - 2) * k) + "  " + timestamp);
+//				System.out.print("SENDing: " + data[0] + "  " + (0 + (datagramSize - 2) * k) + 
+//						":" + ((datagramSize - 3) + (datagramSize - 2) * k) + "  " + timestamp);
 
 				// Increment ALL the things
 				k++;
@@ -166,7 +180,7 @@ class PacketSender {
 
 				// If its a good packet, displays that successful ack was received.
 				if (ackData[0] == 0) {
-					System.out.println("  SENT");
+//					System.out.println("  SENT");
 					System.out.println("AckRcvd: " + data[0] + "  Movewnd");
 				}
 
@@ -179,38 +193,36 @@ class PacketSender {
 					
 					// Handle if we get a corrupt packet error.
 					if (ackData[0] == CORRUPT) {
-						System.out.println("  ERR");
-						System.out.println("Timeout: " + data[0]);
+//						System.out.println("  ERR");
 						data[1] = 0;
 						packet.setData(data);
 						dataSender.send(packet);
-						TimeUnit.MILLISECONDS.sleep(datagramTimeout);
+//						TimeUnit.MILLISECONDS.sleep(datagramTimeout);
 						timestamp = System.currentTimeMillis();
-						System.out.print("RESEND:\t " + data[0] + "  " + (0 + (datagramSize - 2) * (k-1)) + 
-								":" + ((datagramSize - 3) + (datagramSize - 2) * (k-1)) + "  " + timestamp);
+						System.out.println("AckRcvd  " + data[0] + "  ErrAck.");
+						System.out.println("RESEND:\t " + data[0] + "  " + (0 + (datagramSize - 2) * (k-1)) + 
+								":" + ((datagramSize - 3) + (datagramSize - 2) * (k-1)) + "  " + timestamp + "  SENT");
 						dataSender.receive(ackPacket);
 						ackData = ackPacket.getData();
 						// If we get a successful ack display messge
 						if (ackData[0] == 0) {
-							System.out.println("  RESENT");
 							System.out.println("AckRcvd: " + data[0] + "  Movewnd");
 						}
 						// Handle if we get dropped packet error
 					} else if (ackData[0] == DROP) {
-						System.out.println("  DROP");
-						System.out.println("Timeout: " + data[0]);
+//						System.out.println("  DROP");
 						data[1] = 0;
 						packet.setData(data);
 						dataSender.send(packet);
-						TimeUnit.MILLISECONDS.sleep(datagramTimeout);
+//						TimeUnit.MILLISECONDS.sleep(datagramTimeout);
 						timestamp = System.currentTimeMillis();
-						System.out.print("RESEND:\t " + data[0] + "  " + (0 + (datagramSize - 2) * (k-1)) + 
-								":" + ((datagramSize - 3) + (datagramSize - 2) * (k-1)) + "  " + timestamp);
+						//System.out.println("AckRcvd " + data[0] + " Dupl");
+						System.out.println("RESEND:\t " + data[0] + "  " + (0 + (datagramSize - 2) * (k-1)) + 
+								":" + ((datagramSize - 3) + (datagramSize - 2) * (k-1)) + "  " + timestamp + "  SENT");
 						dataSender.receive(ackPacket);
 						ackData = ackPacket.getData();
 						// If we get a successful ack display messge
 						if (ackData[0] == 0) {
-							System.out.println("  RESENT");
 							System.out.println("AckRcvd: " + data[0] + "  Movewnd");
 						}
 					}
