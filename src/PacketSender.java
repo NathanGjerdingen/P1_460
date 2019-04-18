@@ -38,6 +38,8 @@ class PacketSender {
 	static final int MOVEWND = 2;
 	static final int DROP = 3;
 	static final int COMPLETE = 4;
+	
+	static boolean flag = true;
 
 	/**
 	 * This method will take 5 arguments from command line. 1st arg is datagram
@@ -130,6 +132,8 @@ class PacketSender {
 								":" + ((datagramSize - 3) + (datagramSize - 2) * k) + "  " + timestamp + "  ERR");
 						System.out.println("Timeout: " + data[0]);
 						TimeUnit.MILLISECONDS.sleep(datagramTimeout);
+						
+						timestamp = System.currentTimeMillis();
 						System.out.println("RESEND:  " + data[0] + "  " + (0 + (datagramSize - 2) * k) + 
 								":" + ((datagramSize - 3) + (datagramSize - 2) * k) + "  " + timestamp + "  SENT");
 						dataSender.send(packet);
@@ -141,6 +145,8 @@ class PacketSender {
 								":" + ((datagramSize - 3) + (datagramSize - 2) * k) + "  " + timestamp + "  DROP");
 						System.out.println("Timeout: " + data[0]);
 						TimeUnit.MILLISECONDS.sleep(datagramTimeout);
+						
+						timestamp = System.currentTimeMillis();
 						System.out.println("RESEND:  " + data[0] + "  " + (0 + (datagramSize - 2) * k) + 
 								":" + ((datagramSize - 3) + (datagramSize - 2) * k) + "  " + timestamp + "  SENT");
 						dataSender.send(packet);
@@ -217,8 +223,8 @@ class PacketSender {
 //						TimeUnit.MILLISECONDS.sleep(datagramTimeout);
 						timestamp = System.currentTimeMillis();
 						//System.out.println("AckRcvd " + data[0] + " Dupl");
-						System.out.println("RESEND:\t " + data[0] + "  " + (0 + (datagramSize - 2) * (k-1)) + 
-								":" + ((datagramSize - 3) + (datagramSize - 2) * (k-1)) + "  " + timestamp + "  SENT");
+//						System.out.println("RESEND:\t " + data[0] + "  " + (0 + (datagramSize - 2) * (k-1)) + 
+//								":" + ((datagramSize - 3) + (datagramSize - 2) * (k-1)) + "  " + timestamp + "  SENT");
 						dataSender.receive(ackPacket);
 						ackData = ackPacket.getData();
 						// If we get a successful ack display messge
