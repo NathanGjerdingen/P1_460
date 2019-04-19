@@ -133,7 +133,10 @@ class PacketReceiver {
 			if (currentData[1] == CORRUPT) {
 				dataReciever.send(new DatagramPacket(new byte[] { CORRUPT }, 1, new InetSocketAddress("localhost", 8080)));
 			//	System.out.println("[CRPT]: #" + currentData[0] + ", requesting resend...");
-				System.out.println("ACKSent: " + currentData[0] + " \t" + timestamp + "\tERR");
+//				timestamp = System.currentTimeMillis();
+			//	System.out.println("ACKSent: " + currentData[0] + " \t" + timestamp + "\tERR");
+				System.out.println("RECV:  \t " + currentData[0] + " \t" + timestamp + "\tERR");
+				
 				dataReciever.receive(dataRecieved);
 				currentData = dataRecieved.getData();
 			}
@@ -149,7 +152,7 @@ class PacketReceiver {
 				dataReciever.receive(dataRecieved);
 				currentData = dataRecieved.getData();
 				timestamp = System.currentTimeMillis();
-			}
+			}			
 
 			// Randomizing corrupt packets. While will only run if corrupt packets are being
 			// sent. Once a good packet is received then it will break from the while.
@@ -161,6 +164,10 @@ class PacketReceiver {
 						dataReciever.send(new DatagramPacket(new byte[] { CORRUPT }, 1, new InetSocketAddress("localhost", 8080)));
 						dataReciever.receive(dataRecieved);
 						currentData = dataRecieved.getData();
+						timestamp = System.currentTimeMillis();
+						System.out.println("RECV:  \t " + currentData[0] + " \t" + timestamp + "\tRECV");
+						TimeUnit.MILLISECONDS.sleep(2);
+						timestamp = System.currentTimeMillis();
 						System.out.println("ACKSent: " + currentData[0] + " \t" + timestamp + "\tERR");
 					}
 				} else {
@@ -172,8 +179,11 @@ class PacketReceiver {
 			// offset send.
 			int startSize = size;
 			size += dataRecieved.getData().length - 3;
+			timestamp = System.currentTimeMillis();
 			//System.out.println("RECV" + currentData[0] + "\t" + startSize + ":" + size + "\t\t" + timestamp + "\t\tRECV");
 			System.out.println("RECV:  \t " + currentData[0] + " \t" + timestamp + "\tRECV");
+			TimeUnit.MILLISECONDS.sleep(2);
+			timestamp = System.currentTimeMillis();
 			System.out.println("ACKSent: " + currentData[0] + " \t" + timestamp + "\tSENT");
 			size++;
 			// Getting a copy of the data that was received and writing it to the output

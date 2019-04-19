@@ -118,6 +118,7 @@ class PacketSender {
 			
 			// Checks if location of buffer has reached the size limit.
 			if (j % (datagramSize - 1) == 0) {
+				TimeUnit.MILLISECONDS.sleep(000000000003);
 
 				// Randomizing if the packet will corrupt or if it will be dropped or if its a
 				// good packet.
@@ -196,7 +197,6 @@ class PacketSender {
 				// Once we finally get a successful packet we will display the success and move
 				// on.
 				while (ackData[0] != 0) {
-					
 					// Handle if we get a corrupt packet error.
 					if (ackData[0] == CORRUPT) {
 //						System.out.println("  ERR");
@@ -204,6 +204,7 @@ class PacketSender {
 						packet.setData(data);
 						dataSender.send(packet);
 //						TimeUnit.MILLISECONDS.sleep(datagramTimeout);
+						TimeUnit.MILLISECONDS.sleep(2);
 						timestamp = System.currentTimeMillis();
 						System.out.println("AckRcvd  " + data[0] + "  ErrAck.");
 						System.out.println("RESEND:\t " + data[0] + "  " + (0 + (datagramSize - 2) * (k-1)) + 
